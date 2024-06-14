@@ -1,4 +1,8 @@
-const bookLibrary = [];
+import DomHelper from './domHelper.js';
+
+// OBJECT CONSTRUCTORS
+const readLibrary = [];
+const toReadLibrary = [];
 
 function Book(read, title, author, type) {
   this.read = read;
@@ -22,6 +26,31 @@ function toRead(title, author, type, priority) {
 }
 Object.setPrototypeOf(toRead.prototype, Book.prototype);
 
+const toggleTable = (function(doc) {
+
+  const tableType = new DomHelper('.toggle-table');
 
 
+  const writeToDOM = (selector, message) => {
+    if (!!doc && "querySelector" in doc) {
+      doc.querySelector(selector).innerHTML = message;
+    }
+  }
+
+  return {
+    makeUppercase,
+    writeToDOM,
+  }
+  
+})(document);
+
+
+
+myElement.addClass('highlight');
+myElement.setText('Hello, JavaScript!');
+console.log(myElement.getText());
+
+myElement.addEventListener('click', () => {
+  alert('Element clicked!');
+});
 
