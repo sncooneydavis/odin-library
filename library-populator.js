@@ -1,7 +1,6 @@
 
 //POPULATE TABLES
 function fillTable(tableType, library) {
-
     if (tableType == tableReadBody) {
         for (const book of library) {
             const readBookHTML = `
@@ -12,6 +11,7 @@ function fillTable(tableType, library) {
                     <td>${book.subject}</td>
                     <td>${book.rating}</td>
                     <td>${book.dateRead}</td>
+                    <td class="button-holder"></td>
                 </tr>
             `;
             tableType.innerHTML = readBookHTML;
@@ -25,6 +25,7 @@ function fillTable(tableType, library) {
                     <td>${book.author}</td>
                     <td>${book.type}</td>
                     <td>${book.priority}</td>
+                    <td class="button-holder"></td>
                 </tr>
             `;
             tableType.innerHTML = toReadBookHTML;

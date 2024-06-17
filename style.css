@@ -21,11 +21,22 @@
  font-size: ;
  font-weight: ;
  color: 
+ DISABLE BUTTON
 
 }
 
 .dim-text {
 
+}
+
+#table-read th:nth-child(7), 
+#table-read td:nth-child(7) {
+  border: none;
+}
+
+#table-to-read th:nth-child(5), 
+#table-to-read td:nth-child(5) {
+  border: none;
 }
 
 

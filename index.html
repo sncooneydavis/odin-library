@@ -16,19 +16,15 @@
                 <span>
                     <button class="add-button dim-text">+</button>
                 </span>
-                <span class="bright-text">Books </span>
-                <span class="bright-text toggle-table">Read </span>
-                <span class="dim-text">/ </span>
-                <span class="dim-text toggle-table">to Read </span>
+                <span class="header-text">Books </span>
+                <span class="header-text toggle-read">Read </span>
+                <span class="dim header-text">/ </span>
+                <span class="dim header-text toggle-to-read">to Read </span>
             </div>
             <div class="container table">
-                <table id="table-read">
+                <table id="table-read" class="shown">
                     <thead>
                         <tr>
-                            <th>
-                                Date Read
-                                <button class="sort-button"></button>
-                            </th>
                             <th>
                                 Title
                                 <button class="sort-button"></button>
@@ -49,26 +45,20 @@
                                 Rating
                                 <button class="sort-button"></button>
                             </th>
+                            <th>
+                                Date Read
+                                <button class="sort-button"></button>
+                            </th>
+                            <th>
+
+                            </th>
                         </tr>
                     </thead>
-                    <tr>
-                        <td>5/10/24</td>
-                        <td>Babel, or the Necessity of Violence</td>
-                        <td>R.F. Kuang</td>
-                        <td>Fiction</td>
-                        <td>SciFi</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>5/11/24</td>
-                        <td>A Swim in the Pond in the Rain</td>
-                        <td>George Saunders</td>
-                        <td>Guide</td>
-                        <td>Writing</td>
-                        <td></td>
-                    </tr>
+                    <tbody>
+
+                    </tbody>
                 </table>
-                <table id="table-to-read" class="hidden">
+                <table id="table-to-read">
                     <thead>
                         <tr>
                             <th>
@@ -87,20 +77,14 @@
                                 Priority
                                 <button class="sort-button"></button>
                             </th>
+                            <th>
+                                
+                            </th>
                         </tr>
                     </thead>
-                    <tr>
-                        <td>Think Like a Programmer: An Introduction to Creative Problem Solving</td>
-                        <td>V. Anton Spraul</td>
-                        <td>Guide</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Babel, of the Necessity of Violence</td>
-                        <td>R.F. Kuang</td>
-                        <td>SciFi</td>
-                        <td></td>
-                    </tr>
+                    <tbody>
+
+                    </tbody>
                 </table>
             </div>
         </div>
