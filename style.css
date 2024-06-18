@@ -29,15 +29,8 @@
 
 }
 
-#table-read th:nth-child(7), 
-#table-read td:nth-child(7) {
-  border: none;
+.missing-input {
+  
 }
-
-#table-to-read th:nth-child(5), 
-#table-to-read td:nth-child(5) {
-  border: none;
-}
-
 
 

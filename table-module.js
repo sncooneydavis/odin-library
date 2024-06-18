@@ -4,149 +4,118 @@ const tableModule = (function() {
 
   const tableRead = document.querySelector('#table-read');
   const tableToRead = document.querySelector('#table-to-read');
+  const tableReadBody = tableRead.querySelector('tbody');
+  const tableToReadBody = tableToRead.querySelector('tbody');
 
-  const fillTable = (workingTable, segmentToFillWith) => {
-    if (workingTable == "table-read") {
-      const tableReadBody = document.getElementById('table-read').querySelector('tbody');
-      for (const book of segmentToFillWith) {
-          const readBookHTML = `
-            <tr>
-              <td>${book.title}</td>
-              <td>${book.author}</td>
-              <td>${book.type}</td>
-              <td>${book.subject}</td>
-              <td>${book.rating}</td>
-              <td>${book.dateRead}</td>
-              <td class="button-holder"></td>
-            </tr>
-          `;
-          tableReadBody.innerHTML = readBookHTML;
-      }
+  const renderTable = (workingTable, libraryArr) => {
+    if (workingTable == "table-read") { 
+      tableReadBody.innerHTML = "";
+      libraryArr.forEach((book, index) => {
+        let row = tableReadBody.insertRow();
+        Object.keys(book).forEach(key => {
+            let cell = row.insertCell();
+            cell.innerHTML = `<input type="text" value="${book[key]}" data-index="${index}" data-key="${key}">`;
+        });
+      });
     }
     else if (workingTable == "table-to-read") {
-      const tableToReadBody = document.getElementById('table-to-read').querySelector('tbody');
-      for (const book of segmentToFillWith) {
-          const toReadBookHTML = `
-            <tr>
-              <td>${book.title}</td>
-              <td>${book.author}</td>
-              <td>${book.type}</td>
-              <td>${book.priority}</td>
-              <td class="button-holder"></td>
-            </tr>
-          `;
-          tableToReadBody.insertAdjacentHTML('afterbegin', toReadBookHTML); 
-      }  
+      tableToReadBody.innerHTML = "";
+      libraryArr.forEach((book, index) => {
+        let row = tableToReadBody.insertRow();
+        Object.keys(book).forEach(key => {
+            let cell = row.insertCell();
+            cell.innerHTML = `<input type="text" value="${book[key]}" data-index="${index}" data-key="${key}">`;
+        });
+      });
     }
+    let lastCell = row.insertCell();
+    lastCell.innerHTML = `<td class='mini-button container'></td>`;
+    addEditButtons(row);
   }
 
   const hideTable = (workingTable) => {
-    if (workingTable == "table-read") {
+    if (workingTable == "table-to-read") {
       tableRead.classList.add('hidden');
       tableToRead.classList.remove('hidden');
-      workingTable = "table-to-read";
     }
     else {
       tableRead.classList.remove('hidden');
       tableToRead.classList.add('hidden');
-      workingTable = "table-read";
     }
   }
 
-  const addBookRow = (workingTable) => {
+  const addBook = (workingTable, libraryArr) => {
+    const newBook = new bookToRead();
+    libraryArr.push(newBook);
+    renderTable(workingTable, libraryArr);
+    disableRowsNot() // TODO not first row
 
-    if (workingTable == "table-read") {
-        const newRowHTML = `
-          <tr> 
-            <td class="new"></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="button-holder"></td>
-          </tr>
-        `;
-        tableRead.insertAdjacentHTML('afterbegin', newRowHTML);
-        
+
+  }
+
+  const disableRowsNot = (selectedRow) => {
+    document.querySelectorAll('tr').forEach(row => {
+      if (row !== selectedRow) {
+        row.querySelectorAll('input, button').forEach(input => {
+          input.disabled = true;
+        }) 
       }
-      if (workingTable == "table-to-read") {
-        const newRowHTML = `
-          <tr> 
-            <td class="new"></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="button-holder"></td>
-          </tr>
-        `;
-        tableToRead.insertAdjacentHTML('afterbegin', newRowHTML);
-    }
-    const firstCell = document.querySelector(".dim.new");
-    addEditButtons(firstCell);
+    })
+
   }
 
-  //ADD BUTTONS TO LAST CELL OF TABLE
-  const addEditButtons = (cell) => {
-    function insertHtmlInLastCell(cell, htmlContent) {
-      const lastCell = cell.closest('tr').querySelector('td:last-child');
-      lastCell.innerHTML += htmlContent;
-    }
-    const saveButtonHTML = `
-      <input type="image" class="save mini-button" src="./images/Save-Mingcute.svg" alt="Save" width="20">
-    `;
-    insertHtmlInLastCell(cell, saveButtonHTML);
+  const disableButtons = (...) => {
+    //disable each button in list supplied
+  }
 
-    const deleteButtonHTML = `
+  const enable = (workingTable, addButton, btnTogglesRead, btnTogglesToRead) => {
+    addButton.disabled = false;
+    if (workingTable == 'table-read') {
+      btnTogglesRead.disabled = false;
+    }
+    else {
+      btnTogglesToRead.disabled = false;
+    }
+  }
+
+  //ADD EDIT BUTTONS TO LAST CELL OF TABLE
+  const addEditButtons = (row) => {
+    const lastCell = row.cells[row.cells.length - 1];
+    lastCell.innerHTML = `
+      <input type="image" class="save mini-button" src="./images/Save-Mingcute.svg" alt="Save" width="20">
       <input type="image" class="delete mini-button" src="./images/Delete-Mingcute.svg" alt="Delete" width="20">
     `;
-    insertHtmlInLastCell(cell, deleteButtonHTML);
-  } 
 
-  // CHANGE CELL CONTENT
-  const editCell = (cell) => {
-    rowBeingEdited = cell.closest('tr');
-    // TODO: Force focus on row being edited until save or delete is clicked
-    cell.textContent = "";
-    cell.innerHTML = `
-      <input type="text" class="dim" />
-    `;
-    // SAVE EDITS TO ARRAY
+    // EVENT LISTENERS ON SAVE BUTTON
     const saveButton = document.querySelector(".save.mini-button");
     saveButton.addEventListener("click", () => {
-      const selectorsInRow = Array.from(rowBeingEdited.querySelectorAll('td'));
-      let dataInRow = [];
-      for (let selector of selectorsInRow) {
-        const input = selector.querySelector('input');
-        if (input) {
-          dataInRow.push(input.value);
-        } else {
-          dataInRow.push(selector.innerText);
-        }
-      }
       
-    });
-    // DELETE EDITS
+    })
+
+    //EVENT LISTENER ON DELETE BUTTON
     const deleteButton = document.querySelector("delete.mini-button");
     deleteButton.addEventListener("click", () => {
       
     })
+  } 
 
-    editingMode = "off";
+  // EDIT EXISTING OR NEW CELL CONTENT 
+  const editCell = () => {
+    
+
   }
   
+    // SAVE EDITS
+        // event listener on save: add or update corresponding object in array
+        // no save if title or author cell empty
+        enableButtons();
+
+
+
+    // DELETE EDITS
+        //event listener delete button: delete row in table and corresponding obj in arr
+      enableButtons();
+
 })();
-
-
-    
-        
-
-    //event listener delete button: delete row in table and corresponding obj in arr
-
-
-    // no save if title or author cell empty
-    // event listener on save: add or update corresponding object in array
-
-
 
 export default tableModule;
