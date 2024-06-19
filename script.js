@@ -2,35 +2,30 @@ import tableModule from './table-module.js';
 import editModule from './edit-module.js';
 
 // OBJECT CONSTRUCTORS
-function Book(title, author, type) {
+
+function bookToRead(title, author, type) {
   this.title = title;
   this.author = author;
   this.type = type;
 }
-
-function bookRead(title, author, type, subject, rating, dateRead, notes) {
-  Book.call(this, title, author, type);
+function bookRead(title, author, type, subject, rating, dateRead) {
+  call(this, title, author, type)
   this.subject = subject;
   this.rating = rating;
   this.dateRead = dateRead;
-  this.notes = notes;
 }
-Object.setPrototypeOf(bookRead.prototype, Book.prototype);
-
-function bookToRead(title, author, type, priority) {
-  Book.call(this, title, author, type);
-  this.priority = priority;
-}
-Object.setPrototypeOf(bookToRead.prototype, Book.prototype);
-
+Object.setPrototypeOf(bookRead, bookToRead);
 
 // ON LOAD
 let workingTable = "table-read";
 let readLibraryArr = [];
 let toReadLibraryArr = [];
 
+const tableReadBody = document.querySelector('#table-read > tbody');
+const tableToReadBody = document.querySelector('#table-to-read > tbody');
+
 let wholeTable = workingTable == "table-read" ? tableModule.tableRead : tableModule.tableToRead;
-let tableBody = workingTable == "table-read" ? tableModule.tableReadBody : tableModule.tableToReadBody;
+let tableBody = workingTable == "table-read" ? tableReadBody : tableToReadBody;
 let libraryArr = workingTable == "table-read" ? readLibraryArr : toReadLibraryArr;
 
 tableModule.renderTable(tableBody, libraryArr);
@@ -59,8 +54,13 @@ tableModule.btnTogglesRead.addEventListener("click", function() {
 // ADD BOOK: EMPTY ROW IN TABLE & OBJ IN ARR
 const btnAddsBook = document.querySelector(".add-button");
 btnAddsBook.addEventListener("click", () => {
-  
-  const newBook = new bookToRead();
+  let newBook;
+  if (workingTable == "book-to-read") {
+    newBook = new bookRead();
+  }
+  else {
+    newBook = new bookToRead();
+  }
   libraryArr.unshift(newBook);
   tableModule.renderTable(tableBody, libraryArr);
   
