@@ -3,18 +3,20 @@ import editModule from './edit-module.js';
 
 // OBJECT CONSTRUCTORS
 
-function bookToRead(title, author, type) {
+function bookToRead(title, author, type, subject, priority) {
   this.title = title;
   this.author = author;
   this.type = type;
+  this.subject = subject;
+  this.priority = priority;
 }
-function bookRead(title, author, type, subject, rating, dateRead) {
-  call(this, title, author, type)
+function bookRead(title, author, type, subject, rating) {
+  this.title = title;
+  this.author = author;
+  this.type = type;
   this.subject = subject;
   this.rating = rating;
-  this.dateRead = dateRead;
 }
-Object.setPrototypeOf(bookRead, bookToRead);
 
 // ON LOAD
 let workingTable = "table-read";
@@ -28,7 +30,7 @@ let wholeTable = workingTable == "table-read" ? tableModule.tableRead : tableMod
 let tableBody = workingTable == "table-read" ? tableReadBody : tableToReadBody;
 let libraryArr = workingTable == "table-read" ? readLibraryArr : toReadLibraryArr;
 
-tableModule.renderTable(tableBody, libraryArr);
+tableModule.renderTable(workingTable, tableBody, libraryArr);
 
 
 // TOGGLE TABLE FXS
@@ -38,7 +40,7 @@ tableModule.btnTogglesToRead.addEventListener("click", function() {
   wholeTable.style.display = 'none';
   workingTable = "table-to-read";
   wholeTable.style.display = 'block';
-  tableModule.renderTable(tableBody, libraryArr);
+  tableModule.renderTable(workingTable, tableBody, libraryArr);
 });
 
 tableModule.btnTogglesRead.addEventListener("click", function() {
@@ -47,7 +49,7 @@ tableModule.btnTogglesRead.addEventListener("click", function() {
   wholeTable.style.display = 'none';
   workingTable = "table-read";
   wholeTable.style.display = 'block';
-  tableModule.renderTable(tableBody, libraryArr);
+  tableModule.renderTable(workingTable, tableBody, libraryArr);
 });
 
 
@@ -62,7 +64,7 @@ btnAddsBook.addEventListener("click", () => {
     newBook = new bookToRead();
   }
   libraryArr.unshift(newBook);
-  tableModule.renderTable(tableBody, libraryArr);
+  tableModule.renderTable(workingTable, tableBody, libraryArr);
   
   tableModule.disableButtons();
   tableModule.disableRowsNot(tableBody.rows[0]);
@@ -77,7 +79,6 @@ tableBody.addEventListener('click', function(event) {
   
   if (!clickedCell || !clickedRow) return; 
 
-  clickedCell.classList.remove('missing-input');
   tableModule.disableButtons();
   tableModule.disableRowsNot(clickedRow);
   editModule.addEditButtons(workingTable, clickedRow, tableBody, libraryArr);

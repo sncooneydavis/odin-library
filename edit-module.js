@@ -3,15 +3,18 @@ import tableModule from './table-module.js';
 const editModule = (function() {
 
     const buttonCont = document.querySelector(".mini-buttons");
+    let workingTable;
     let row;
     let tableBody;
     let libraryArr;
 
-    const addEditButtons = (workingTable, importedRow, importedTableBody, importedLibraryArr) => {
+    const addEditButtons = (importedWorkingTable, importedRow, importedTableBody, importedLibraryArr) => {
         // TODO: need to orient buttons to be near row selected 
+        workingTable = importedWorkingTable;
         row = importedRow;
         tableBody = importedTableBody;
         libraryArr = importedLibraryArr;
+
         if (workingTable == "table-to-read") {
         buttonCont.innerHTML = `
             <input type="image" class="read mini-button" src="./images/Book-Mingcute.svg" alt="Read" title="Mark as Read" width="20">
@@ -30,6 +33,9 @@ const editModule = (function() {
 
     // EVENT LISTENERS + FXY FOR MINI BUTTONS
     const markAsRead = () => {
+        // remove book obj from to-read array
+        // add book obj to read array
+        // re-render workingTable without the book obj's row
         
     }
     const readButton = document.querySelector(".read.mini-button");
@@ -41,25 +47,43 @@ const editModule = (function() {
     const backButton = document.querySelector(".back.mini-button");
     backButton.addEventListener("click", goBack);
 
-    const saveCurrentRow = (row, libraryArr) => {
-      let editedBookObj = libraryArr[row.rowIndex];
+    const saveCurrentRow = (workingTable, row, libraryArr) => {
+      let bookObjToBeSaved = libraryArr[row.rowIndex];
       const cells = row.cells;
       const keys = Object.keys(editedBookObj);
       let nullOrFullPropertiesArr = [];
       for (let i = 0; i < cells.length; i++) {
         const userInput = cells[i].querySelector('input').value;
-      if (userInput == "") {
-        nullOrFullPropertiesArr.push(null);
-      }
-      else {
-        editedBookObj[keys[i]] = userInput;
-        nullOrFullPropertiesArr.push(userInput);
-      }
+        if (userInput && userInput == "") {
+            nullOrFullPropertiesArr.push(null);
+        }
+        else if (userInput && userInput!= "") {
+            bookObjToBeSaved[keys[i]] = userInput;
+            nullOrFullPropertiesArr.push(userInput);
+        }
+        else if (!userInput) {
+            let iconsOn = 0;
+            for(let j = 1; j <= 5; j++) {
+                let icons = cells[i].querySelector('img');
+                if (icons[j].classList.contains('on')) {
+                    iconsOn++;
+                }
+            }
+            if (workingTable == "table-read") {
+                bookObjToBeSaved.rating = iconsOn;
+            }
+            else {
+                bookObjToBeSaved.priority = iconsOn;
+            }
+        }
       }
       if (nullOrFullPropertiesArr.contains('empty')) {
         for (let i = 0; i < cells.length; i ++) {
           if (nullOrFullPropertiesArr[i] == 'empty') {
             cells[i].classList.add('missing-input');
+          }
+          else {
+            cells[i].classList.remove('missing-input');
           }
         }
       }
@@ -73,7 +97,7 @@ const editModule = (function() {
       }
     }
     const saveButton = document.querySelector(".save.mini-button");
-    saveButton.addEventListener("click", saveCurrentRow(row, libraryArr));
+    saveButton.addEventListener("click", saveCurrentRow(workingTable, row, libraryArr));
     
     const deleteCurrentRow = (row, libraryArr) => {
       libraryArr.splice(row.rowIndex, 1);
