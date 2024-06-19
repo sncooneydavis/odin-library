@@ -3,60 +3,75 @@ import tableModule from './table-module.js';
 
 const editModule = (function() {
 
-    const buttonCont = document.querySelector(".mini-buttons");
-    let cells;
+    let editorButtonsContainer = document.querySelector(".editor-buttons");
+    let cells = currentRow.cells;
 
     const addEditButtons = () => {
-        // TODO: need to orient buttons to be near row selected 
-        cells = currentRow.cells;
-
-        if (currentTableNameIs == "table-to-read" && currentArr[0] != undefined) {
-        buttonCont.innerHTML = `
-            <input type="image" class="read mini-button" src="./images/Book-Mingcute.svg" alt="Read" title="Mark as Read" width="20">
-        `;
+    
+        if (currentArr[0].title != undefined) {
+            editorButtonsContainer.innerHTML += `
+                <input type="image" class="back editor-button" src="./images/Back-Mingcute.svg" alt="Back" title="Don't Save Changes" width="20">
+            `;
+            if (currentTableNameIs == "table-to-read") {
+                editorButtonsContainer.innerHTML = `
+                    <input type="image" class="mark-as-read editor-button" src="./images/Book-Mingcute.svg" alt="Mark as Read" title="Mark as Read" width="20">
+                `;
+            }
+            else if (currentTableNameIs == "table-read") {
+                editorButtonsContainer.innerHTML = `
+                     <input type="image" class="mark-as-unread editor-button" src="./images/Book-Mingcute.svg" alt="Mark as Not Read" title="Mark as Not Read" width="20">
+                `;
+            }
         }
-        if (libraryArr[0].title != undefined) {
-        buttonCont.innerHTML += `
-            <input type="image" class="back mini-button" src="./images/Back-Mingcute.svg" alt="Back" title="Don't Save Changes" width="20">
-        `;
-        }
-        buttonCont.innerHTML += `
-        <input type="image" class="save mini-button" src="./images/Save-Mingcute.svg" alt="Save" title="Save Changes" width="20">
-        <input type="image" class="delete mini-button" src="./images/Delete-Mingcute.svg" alt="Delete" title="Delete Entry" width="20">
+        editorButtonsContainer.innerHTML += `
+        <input type="image" class="save editor-button" src="./images/Save-Mingcute.svg" alt="Save" title="Save Changes" width="20">
+        <input type="image" class="delete editor-button" src="./images/Delete-Mingcute.svg" alt="Delete" title="Delete Entry" width="20">
         `;
     }
 
-    // EVENT LISTENERS + FXY FOR MINI BUTTONS
+    // EVENT LISTENERS + FXY FOR EDITOR BUTTONS
+    let bookObjToBeSaved = currentArr[currentRow.rowIndex];
+    let keys = Object.keys(editedBookObj);
+    
     const markAsRead = () => {
         // add book obj to read array
-        Object.keys 
+        readLibraryArr.unshift(bookObjToBeSaved);
         // remove book obj from to-read array
-        
-        
+        toReadLibraryArr.splice(currentRow.rowIndex, 1);
         // re-render workingTable without the book obj's row
+        currentTable.deleteRow(currentRow.rowIndex);
         
     }
-    const readButton = document.querySelector(".read.mini-button");
-    readButton.addEventListener("click", markAsRead);
+    const markReadButton = document.querySelector(".mark-as-read.editor-button");
+    markReadButton.addEventListener("click", markAsRead);
+
+    const markAsUnread = () => {
+        // add book obj to to-read array
+        toReadLibraryArr.unshift(bookObjToBeSaved);
+        // remove book obj from read array
+        readLibraryArr.splice(currentRow.rowIndex, 1);
+        // re-render workingTable without the book obj's row
+        currentTable.deleteRow(currentRow.rowIndex);
+        
+    }
+    const markUnreadButton = document.querySelector(".mark-as-read.editor-button");
+    markUnreadButton.addEventListener("click", markAsUnread);
 
     const goBack = () => {
       // RE-RENDER ORIGINAL ROW TEXT
       for (let i = 0; i < cells.length-1; i++) {
-        Object.keys(libraryArr[currentRow.rowIndex]).forEach(key => {
+        Object.keys(currentArr[currentRow.rowIndex]).forEach(key => {
             cells[i].innerHTML = `<input type="text" value="${book[key]}" data-index="${index}" data-key="${key}">`;
         });
       }
       reset();  
     }
-    const backButton = document.querySelector(".back.mini-button");
+    const backButton = document.querySelector(".back.editor-button");
     backButton.addEventListener("click", goBack);
 
     const saveCurrentRow = () => {
-      let bookObjToBeSaved = currentArr[currentRow.rowIndex];
-      const keys = Object.keys(editedBookObj);
-      let nullOrFullPropertiesArr = [];
-
       // CHECK IF TABLE IS MISSING TEXT INPUT
+      let nullOrFullPropertiesArr = [];
       for (let i = 0; i < cells.length; i++) {
         const userInput = cells[i].querySelector('input').value;
         if (userInput && userInput == "") {
@@ -100,14 +115,15 @@ const editModule = (function() {
         reset();
       }
     }
-    const saveButton = document.querySelector(".save.mini-button");
+    const saveButton = document.querySelector(".save.editor-button");
     saveButton.addEventListener("click", saveCurrentRow());
     
     const deleteCurrentRow = () => {
       currentArr.splice(currentRow.rowIndex, 1);
+      currentTable.deleteRow(currentRow.rowIndex);
       reset();
     }
-    const deleteButton = document.querySelector(".delete.mini-button");
+    const deleteButton = document.querySelector(".delete.editor-button");
     deleteButton.addEventListener("click", deleteCurrentRow());
 
     const reset = () => {
@@ -115,7 +131,7 @@ const editModule = (function() {
       backButton.removeEventListener("click", goBack);
       saveButton.removeEventListener("click", saveCurrentRow);
       deleteButton.removeEventListener("click", deleteCurrentRow);
-      buttonCont = '';
+      editorButtonsContainer.innerHTML = '';
       tableModule.enableAllRows();
       tableModule.enableButtons();
     }

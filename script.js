@@ -1,33 +1,30 @@
 import './shared.js';
 import tableModule from './table-module.js';
 import editModule from './edit-module.js';
+import { currentTable } from './shared.js';
 
 // ON LOAD
 currentTableNameIs = "table-read";
-const tableReadBody = document.querySelector('#table-read > tbody');
-const tableToReadBody = document.querySelector('#table-to-read > tbody');
-let tableBody = currentTableNameIs == "table-read" ? tableReadBody : tableToReadBody;
-let wholeTable = currentTableNameIs == "table-read" ? tableModule.tableRead : tableModule.tableToRead;
-tableModule.renderTable(tableBody);
+tableModule.renderTable();
 
 
 // TOGGLE TABLE FXS
-tableModule.btnTogglesToRead.addEventListener("click", function() {
+btnTogglesToRead.addEventListener("click", function() {
   this.classList.remove('dim');
   this.disabled = true;
-  wholeTable.style.display = 'none';
+  currentTable.style.display = 'none';
   currentTableNameIs = "table-to-read";
-  wholeTable.style.display = 'block';
-  tableModule.renderTable(tableBody);
+  currentTable.style.display = 'block';
+  tableModule.renderTable();
 });
 
-tableModule.btnTogglesRead.addEventListener("click", function() {
+btnTogglesRead.addEventListener("click", function() {
   this.classList.remove('dim');
   this.disabled = true;
-  wholeTable.style.display = 'none';
+  currentTable.style.display = 'none';
   currentTableNameIs = "table-read";
-  wholeTable.style.display = 'block';
-  tableModule.renderTable(tableBody);
+  currentTable.style.display = 'block';
+  tableModule.renderTable();
 });
 
 // OBJECT CONSTRUCTORS
@@ -58,17 +55,16 @@ btnAddsBook.addEventListener("click", () => {
   currentArr.unshift(newBook);
   currentRow = tableBody.rows[0];
   tableModule.renderRow();
-  
-  disableButtons();
-  tableModule.disableRowsNot(currentRow);
+  disableHeaderButtons();
+  tableModule.disableCellsNotOnCurrentRow();
   editModule.addEditButtons();
 })
 
 // EDIT TABLE
-tableBody.addEventListener('click', function(event) {
+currentTable.querySelector('tbody').addEventListener('click', function(event) {
   currentRow = event.target.closest('tr');
-  disableButtons();
-  tableModule.disableRowsNot(currentRow);
+  disableHeaderButtons();
+  tableModule.disableCellsNotOnCurrentRow();
   editModule.addEditButtons();
 })
 

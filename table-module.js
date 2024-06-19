@@ -3,53 +3,54 @@ import './shared.js';
 // EDIT TEXT IN TABLE CELLS
 const tableModule = (function() {
 
-  const renderTable = (tableBody) => {
-    tableBody.innerHTML = "";
+  const renderTable = () => {
+    currentTbody = currentTable.querySelector('tbody');
+    currentTbody.innerHTML = "";
     currentArr.forEach((book, index) => {
-      let rowRendering = tableBody.insertRow();
+      currentRow = tbody.insertRow();
       Object.keys(book).forEach(key => {
-          let cell = rowRendering.insertCell();
+          let cell = currentRow.insertCell();
           cell.innerHTML = `<input type="text" value="${book[key]}" data-index="${index}" data-key="${key}">`;
       });
-      renderLastCell(rowRendering);    
+      renderLastCell(currentRow);    
     });
   }
 
-  const renderLastCell = (rowRendering) => {
+  const renderLastCell = () => {
     if (currentTableNameIs == "table-read") {
-      rowRendering.cells[4].innerHTML = `
+      currentRow.cells[4].innerHTML = `
         <img class='rating button off' src='./images/Star-Mingcute.svg' alt="rating star" width='5'>
         <img class='rating button off' src='./images/Star-Mingcute.svg' alt="rating star" width='5'>
         <img class='rating button off' src='./images/Star-Mingcute.svg' alt="rating star" width='5'>
         <img class='rating button off' src='./images/Star-Mingcute.svg' alt="rating star" width='5'>
         <img class='rating button off' src='./images/Star-Mingcute.svg' alt="rating star" width='5'>
       `;
-      const stars = rowRendering.cells[4].querySelector('img');
-      for (let i = 0; i < book.rating; i++) {
+      const stars = currentRow.cells[4].querySelector('img');
+      for (let i = 0; i < currentArr[currentRow.rowIndex].rating; i++) {
         stars[i].classList.add('on');
         stars[i].classList.remove('off');
       }
     }
     else {
-      rowRendering.cells[4].innerHTML = `
+      currentRow.cells[4].innerHTML = `
       <img class='priority button off' src='./images/Flag-Mingcute.svg' alt="priority" width='5'>
       <img class='priority button off' src='./images/Flag-Mingcute.svg' alt="priority" width='5'>
       <img class='priority button off' src='./images/Flag-Mingcute.svg' alt="priority" width='5'>
       <img class='priority button off' src='./images/Flag-Mingcute.svg' alt="priority" width='5'>
       <img class='priority button off' src='./images/Flag-Mingcute.svg' alt="priority" width='5'>
     `;
-      const flags = rowRendering.cells[4].querySelector('img');
-      for (let i = 0; i < book.priority; i++) {
+      const flags = currentRow.cells[4].querySelector('img');
+      for (let i = 0; i < currentArr[currentRow.rowIndex].rating; i++) {
         flags[i].classList.add('on');
         flags[i].classList.remove('off');
       }
     }
   }
 
-  const disableRowsNot = (row) => {
+  const disableCellsNotOnCurrentRow = () => {
     document.querySelectorAll('tr').forEach(row => {
       if (row !== currentRow) {
-        row.querySelectorAll('input').forEach(input => {
+        row.querySelectorAll('input, img').forEach(input => {
           input.disabled = true;
         }) 
       }
@@ -58,33 +59,25 @@ const tableModule = (function() {
 
   const enableAllRows = () => {
     document.querySelectorAll('tr').forEach(row => {
-      row.querySelectorAll('input').forEach(input => {
+      row.querySelectorAll('input, img').forEach(input => {
         input.disabled = false;
       }) 
     })
   }
 
-  const makeBtnArr = () => {
-    const btnAddsBook = document.querySelector(".add-button");
-    const btnTogglesRead = document.querySelector('.toggle-read');
-    const btnTogglesToRead = document.querySelector('.toggle-to-read');
-    return [btnAddsBook, btnTogglesRead, btnTogglesToRead];
-  }
-
-  const disableButtons = () => {
-    const btnArr = makeBtnArr();
+  const disableHeaderButtons = () => {
+    const btnArr = [btnAddsBook, btnTogglesRead, btnTogglesToRead];
     for (let btn of btnArr) {
       btn.disabled = true;
     }
   }
 
   const enableButtons = () => {
-    const btnArr = makeBtnArr();
+    const btnArr = [btnAddsBook, btnTogglesRead, btnTogglesToRead];
     for (let btn of btnArr) {
         btn.disabled = false;
     }
   }
-
 })();
 
 export default tableModule;
