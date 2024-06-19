@@ -1,21 +1,16 @@
+import './shared.js';
 import tableModule from './table-module.js';
 
 const editModule = (function() {
 
     const buttonCont = document.querySelector(".mini-buttons");
-    let workingTable;
-    let row;
-    let tableBody;
-    let libraryArr;
+    let cells;
 
-    const addEditButtons = (importedWorkingTable, importedRow, importedTableBody, importedLibraryArr) => {
+    const addEditButtons = () => {
         // TODO: need to orient buttons to be near row selected 
-        workingTable = importedWorkingTable;
-        row = importedRow;
-        tableBody = importedTableBody;
-        libraryArr = importedLibraryArr;
+        cells = currentRow.cells;
 
-        if (workingTable == "table-to-read") {
+        if (currentTableNameIs == "table-to-read" && currentArr[0] != undefined) {
         buttonCont.innerHTML = `
             <input type="image" class="read mini-button" src="./images/Book-Mingcute.svg" alt="Read" title="Mark as Read" width="20">
         `;
@@ -33,8 +28,11 @@ const editModule = (function() {
 
     // EVENT LISTENERS + FXY FOR MINI BUTTONS
     const markAsRead = () => {
-        // remove book obj from to-read array
         // add book obj to read array
+        Object.keys 
+        // remove book obj from to-read array
+        
+        
         // re-render workingTable without the book obj's row
         
     }
@@ -42,16 +40,23 @@ const editModule = (function() {
     readButton.addEventListener("click", markAsRead);
 
     const goBack = () => {
+      // RE-RENDER ORIGINAL ROW TEXT
+      for (let i = 0; i < cells.length-1; i++) {
+        Object.keys(libraryArr[currentRow.rowIndex]).forEach(key => {
+            cells[i].innerHTML = `<input type="text" value="${book[key]}" data-index="${index}" data-key="${key}">`;
+        });
+      }
       reset();  
     }
     const backButton = document.querySelector(".back.mini-button");
     backButton.addEventListener("click", goBack);
 
-    const saveCurrentRow = (workingTable, row, libraryArr) => {
-      let bookObjToBeSaved = libraryArr[row.rowIndex];
-      const cells = row.cells;
+    const saveCurrentRow = () => {
+      let bookObjToBeSaved = currentArr[currentRow.rowIndex];
       const keys = Object.keys(editedBookObj);
       let nullOrFullPropertiesArr = [];
+
+      // CHECK IF TABLE IS MISSING TEXT INPUT
       for (let i = 0; i < cells.length; i++) {
         const userInput = cells[i].querySelector('input').value;
         if (userInput && userInput == "") {
@@ -59,8 +64,9 @@ const editModule = (function() {
         }
         else if (userInput && userInput!= "") {
             bookObjToBeSaved[keys[i]] = userInput;
-            nullOrFullPropertiesArr.push(userInput);
+            nullOrFullPropertiesArr.push("full");
         }
+        // SAVE RATING OR PRIORITY FOR LAST PROPERTY OF BOOK OBJECT
         else if (!userInput) {
             let iconsOn = 0;
             for(let j = 1; j <= 5; j++) {
@@ -69,7 +75,7 @@ const editModule = (function() {
                     iconsOn++;
                 }
             }
-            if (workingTable == "table-read") {
+            if (currentTableNameIs == "table-read") {
                 bookObjToBeSaved.rating = iconsOn;
             }
             else {
@@ -77,9 +83,10 @@ const editModule = (function() {
             }
         }
       }
-      if (nullOrFullPropertiesArr.contains('empty')) {
-        for (let i = 0; i < cells.length; i ++) {
-          if (nullOrFullPropertiesArr[i] == 'empty') {
+      // IF TABLE MISSING TEXT INPUT(S), HIGHLIGHT IN RED AND DON'T ALLOW SAVE
+      if (nullOrFullPropertiesArr.contains(null)) {
+        for (let i = 0; i < cells.length-1; i++) {
+          if (nullOrFullPropertiesArr[i] == null) {
             cells[i].classList.add('missing-input');
           }
           else {
@@ -87,24 +94,21 @@ const editModule = (function() {
           }
         }
       }
+      // IF TABLE HAS ALL TEXT INPUTS, SAVE TO LIBRARY ARR AND RESET
       else {
-        libraryArr[row.rowIndex] = editedBookObj;
-        tableModule.enableButtons();
-        for (let i = 0; i < cells.length; i++) {
-            cells[i].querySelector('input').value = nullOrFullPropertiesArr[i];
-        }
+        currentArr[currentRow.rowIndex] = editedBookObj;
         reset();
       }
     }
     const saveButton = document.querySelector(".save.mini-button");
-    saveButton.addEventListener("click", saveCurrentRow(workingTable, row, libraryArr));
+    saveButton.addEventListener("click", saveCurrentRow());
     
-    const deleteCurrentRow = (row, libraryArr) => {
-      libraryArr.splice(row.rowIndex, 1);
+    const deleteCurrentRow = () => {
+      currentArr.splice(currentRow.rowIndex, 1);
       reset();
     }
     const deleteButton = document.querySelector(".delete.mini-button");
-    deleteButton.addEventListener("click", deleteCurrentRow(row, libraryArr));
+    deleteButton.addEventListener("click", deleteCurrentRow());
 
     const reset = () => {
       readButton.removeEventListener("click", markAsRead);
@@ -112,9 +116,8 @@ const editModule = (function() {
       saveButton.removeEventListener("click", saveCurrentRow);
       deleteButton.removeEventListener("click", deleteCurrentRow);
       buttonCont = '';
-      tableModule.renderTable(tableBody, libraryArr);
-      tableModule.enableButtons();
       tableModule.enableAllRows();
+      tableModule.enableButtons();
     }
 })();
 
