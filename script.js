@@ -1,4 +1,5 @@
 import tableModule from './table-module.js';
+import editModule from './edit-module.js';
 
 // OBJECT CONSTRUCTORS
 function Book(title, author, type) {
@@ -24,62 +25,60 @@ Object.setPrototypeOf(bookToRead.prototype, Book.prototype);
 
 
 // ON LOAD
+let workingTable = "table-read";
 let readLibraryArr = [];
 let toReadLibraryArr = [];
-let workingTable = "table-read";
-tableModule.renderTable(workingTable, readLibraryArr);
+
+let wholeTable = workingTable == "table-read" ? tableModule.tableRead : tableModule.tableToRead;
+let tableBody = workingTable == "table-read" ? tableModule.tableReadBody : tableModule.tableToReadBody;
+let libraryArr = workingTable == "table-read" ? readLibraryArr : toReadLibraryArr;
+
+tableModule.renderTable(tableBody, libraryArr);
+
 
 // TOGGLE TABLE FXS
-const btnTogglesRead = document.querySelector('.toggle-read');
-const btnTogglesToRead = document.querySelector('.toggle-to-read');
-
-btnTogglesToRead.addEventListener("click", function() {
+tableModule.btnTogglesToRead.addEventListener("click", function() {
   this.classList.remove('dim');
   this.disabled = true;
+  wholeTable.style.display = 'none';
   workingTable = "table-to-read";
-  tableModule.hideTable(workingTable);
-  tableModule.renderTable(workingTable, toReadLibraryArr);
+  wholeTable.style.display = 'block';
+  tableModule.renderTable(tableBody, libraryArr);
 });
 
-btnTogglesRead.addEventListener("click", function() {
+tableModule.btnTogglesRead.addEventListener("click", function() {
   this.classList.remove('dim');
   this.disabled = true;
+  wholeTable.style.display = 'none';
   workingTable = "table-read";
-  tableModule.hideTable(workingTable);
-  tableModule.renderTable(workingTable, readLibraryArr);
+  wholeTable.style.display = 'block';
+  tableModule.renderTable(tableBody, libraryArr);
 });
 
-// ADD BOOK EMPTY ROW
-const addButton = document.querySelector(".add-button");
-addButton.addEventListener("click", () => {
-  tableModule.disableButtons(this, btnTogglesRead, btnTogglesToRead);
-  const currentArray = workingTable === "table-read" ? readLibraryArr : toReadLibraryArr;
-  tableModule.addBook(workingTable, currentArray);
-});
+
+// ADD BOOK: EMPTY ROW IN TABLE & OBJ IN ARR
+const btnAddsBook = document.querySelector(".add-button");
+btnAddsBook.addEventListener("click", () => {
+  
+  const newBook = new bookToRead();
+  libraryArr.unshift(newBook);
+  tableModule.renderTable(tableBody, libraryArr);
+  
+  tableModule.disableButtons();
+  tableModule.disableRowsNot(tableBody.rows[0]);
+  editModule.addEditButtons(workingTable, tableBody.rows[0], tableBody, libraryArr);
+})
+
 
 // EDIT TABLE
-let table;
-if (workingTable == "table-read") {
-  table = tableModule.tableRead; 
-}
-else {
-  table = tableModule.tableToRead;
-}
-table.addEventListener('click', function(event) {
+tableBody.addEventListener('click', function(event) {
   const clickedCell = event.target.closest('td');
   const clickedRow = event.target.closest('tr');
   
   if (!clickedCell || !clickedRow) return; 
-  
-  tableModule.addEditButtons(clickedRow);
+
+  clickedCell.classList.remove('missing-input');
+  tableModule.disableButtons();
   tableModule.disableRowsNot(clickedRow);
-
-  if (workingTable == "table-read") {
-    tableModule.editCell(clickedCell, readLibraryArr);
-  } 
-  else if (workingTable == "table-to-read") {
-    tableModule.editCell(clickedCell, toReadLibraryArr);
-  }
-});
-
-
+  editModule.addEditButtons(workingTable, clickedRow, tableBody, libraryArr);
+})
