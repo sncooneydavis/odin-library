@@ -3,10 +3,13 @@ import tableModule from './table-module.js';
 
 const editModule = (function() {
 
-    let editorButtonsContainer = document.querySelector(".editor-buttons");
+    let editorButtonsContainer = document.querySelector(".editor-buttons.container");
     let cells = currentRow.cells;
 
     const addEditButtons = () => {
+        let rowRect = currentRow.getBoundingClientRect();
+        let tableRect = currentTable.getBoundingClientRect();
+        let yCoordinateOfCurrentRowsTop = rowRect.top - tableRect.top;
     
         if (currentArr[0].title != undefined) {
             editorButtonsContainer.innerHTML += `
@@ -14,19 +17,21 @@ const editModule = (function() {
             `;
             if (currentTableNameIs == "table-to-read") {
                 editorButtonsContainer.innerHTML = `
-                    <input type="image" class="mark-as-read editor-button" src="./images/Book-Mingcute.svg" alt="Mark as Read" title="Mark as Read" width="20">
+                    <input type="image" class="mark-as-read editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Read" title="Mark as Read" width="20">
                 `;
             }
             else if (currentTableNameIs == "table-read") {
                 editorButtonsContainer.innerHTML = `
-                     <input type="image" class="mark-as-unread editor-button" src="./images/Book-Mingcute.svg" alt="Mark as Not Read" title="Mark as Not Read" width="20">
+                     <input type="image" class="mark-as-unread editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Not Read" title="Mark as Not Read" width="20">
                 `;
             }
         }
         editorButtonsContainer.innerHTML += `
-        <input type="image" class="save editor-button" src="./images/Save-Mingcute.svg" alt="Save" title="Save Changes" width="20">
+        <input type="image" class="save editor-button" src="./images/Check-Mingcute.svg" alt="Save" title="Save Changes" width="20">
         <input type="image" class="delete editor-button" src="./images/Delete-Mingcute.svg" alt="Delete" title="Delete Entry" width="20">
         `;
+
+        editorButtonsContainer.style.top = `${yCoordinateOfCurrentRowsTop}px`;
     }
 
     // EVENT LISTENERS + FXY FOR EDITOR BUTTONS

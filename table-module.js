@@ -47,6 +47,7 @@ const tableModule = (function() {
     }
   }
 
+
   const disableCellsNotOnCurrentRow = () => {
     document.querySelectorAll('tr').forEach(row => {
       if (row !== currentRow) {

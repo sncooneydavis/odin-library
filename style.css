@@ -36,4 +36,13 @@
 td:hover {
   background-color: #f0f0f0;  /* Light grey background */
 }
+.sidebar-for-buttons-movement{
+  position: relative;
+}
 
+.editor-buttons.container{
+  position: absolute;
+}
+
+.editor-button {
+}

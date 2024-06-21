@@ -1,10 +1,12 @@
 import './shared.js';
 import tableModule from './table-module.js';
 import editModule from './edit-module.js';
-import { currentTable } from './shared.js';
+
 
 // ON LOAD
 currentTableNameIs = "table-read";
+new Tablesort(document.getElementById('#table-to-read'));
+new Tablesort(document.getElementById('#table-read'));
 tableModule.renderTable();
 
 
