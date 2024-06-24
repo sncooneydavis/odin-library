@@ -20,41 +20,52 @@ const tableModule = (function() {
     }) 
   }
 
-  const renderRow = (bookObj, row) => {
-    const cells = row.querySelectorAll('td');
+  const renderRow = (bookObj, newRow) => {
+    const cells = newRow.querySelectorAll('td');
     Object.keys(bookObj).forEach((key, index) => {
       cells[index].innerHTML = `<input type="text" value="${bookObj[key]}" data-index= "${index}" data-key="${key}">`;
     });
-    renderRankCell(bookObj, row);
+    renderRankCell(bookObj, newRow);
     if (library.setting == 'table-read') {
-      renderDateCell(bookObj, row);
+      renderDateCell(bookObj, newRow);
     } 
   }
 
-  const renderRankCell = (book, row) => {
+  const renderRankCell = (bookObj, newRow) => {
     let rankCellHTML = "";
     if (library.setting == "table-read") {
-        const rankCell = row.cells[4];  
+        const rankCell = newRow.cells[4];  
         // Populate with rating stars
         for (let i = 0; i < 5; i++) {
-          rankCellHTML += `<img class='rating button ${i < book.rating ? 'on' : 'off'}' src='./images/Star-Mingcute.svg' alt="rating star" width='5'>`;
+          rankCellHTML += `<img class='rating button ${i < bookObj.rating ? 'on' : 'off'}' src='./images/Star-Mingcute.svg' alt="rating star" width='5'>`;
         }
         rankCell.innerHTML = rankCellHTML;
     } 
     else {
-      const rankCell = row.cells[3];  
+      const rankCell = newRow.cells[3];  
       // Populate with priority flags
       for (let i = 0; i < 5; i++) {
-        rankCellHTML += `<img class='priority button ${i < book.priority ? 'on' : 'off'}' src='./images/Flag-Mingcute.svg' alt="priority" width='5'>`;
+        rankCellHTML += `<img class='priority button ${i < bookObj.priority ? 'on' : 'off'}' src='./images/Flag-Mingcute.svg' alt="priority" width='5'>`;
       }
       rankCell.innerHTML = rankCellHTML;
     }
   }
-  const renderDateCell = (book, row) => {
-    const dateCell = row.cells[5];
-    dateCell.innerHTML = `<input type='date' value=${book.dateRead}>`;
-  }
 
+  const renderDateCell = (bookObj, newRow) => {
+    const dateCell = newRow.cells[5];
+    if (bookObj.dateRead) {
+      dateCell.innerHTML = `<input type='date' value=${bookObj.dateRead}>`;
+    }
+    else {
+      dateCell.innerHTML = `<input type='date' value=${getTodaysDate()}>`;
+    }
+  }
+  const getTodaysDate = () => {
+    const fullDate = new Date();
+    let month = '0' + (fullDate.getMonth()+1);
+    month = month.slice(-2);
+    return `${fullDate.getFullYear()}-${month}-${fullDate.getDate()}`;
+  }
 
   const switchTable = (tableSwitchFrom) => {
     tableSwitchFrom.classList.remove('dim');
@@ -94,6 +105,9 @@ const tableModule = (function() {
   return {
     renderTable: renderTable,
     renderRow: renderRow,
+    renderRankCell: renderRankCell,
+    renderDateCell: renderDateCell,
+    getTodaysDate: getTodaysDate,
     switchTable: switchTable,
     disableCellsNotOnCurrentRow: disableCellsNotOnCurrentRow,
     enableAllRows: enableAllRows,

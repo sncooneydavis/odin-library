@@ -49,11 +49,14 @@ btnAddsBook.addEventListener("click", () => {
   }
   library.currentArr.unshift(newBook);
   let newRow = library.currentTbody.insertRow(0);
+  row.selected = newRow;
   for (let i = 0; i < Object.keys(newBook).length; i++) {
     let newCell = newRow.insertCell();
     newCell.innerHTML = `<input type="text" value="" data-index= "" data-key="">`;  
   }
-  row.selected = newRow;
+  // add rank buttons 
+  tableModule.renderRankCell(newBook, newRow);
+  tableModule.renderDateCell(newBook, newRow);
   editModule.setupEditing();
 })
 

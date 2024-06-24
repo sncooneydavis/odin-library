@@ -58,9 +58,6 @@ const editModule = (function() {
       backButton.addEventListener("click", () => goBack());
     };
     let goBack  = () => {
-      let indexReminder = row.selectedIndex;
-      console.log(`index of row to be re-added: ${indexReminder}`);
-      console.log(`book in array to be re-added: ${row.selectedBookObj}`);
       tableModule.renderRow(row.selectedBookObj, row.selected);
       reset(); 
     };
@@ -72,28 +69,40 @@ const editModule = (function() {
     }
     let markAsRead = () => {
       // add book obj to read array
+      let arrToMutate = row.selectedBookObj;
+      delete arrToMutate.priority;
+      arrToMutate['subject'] = "";
+      arrToMutate['rating'] = 0;
+      arrToMutate['dateRead'] = tableModule.getTodaysDate();
+      readLibraryArr.unshift(arrToMutate);
 
-      readLibraryArr.unshift(row.selectedBookObj);
       // remove book obj from to-read array
       toReadLibraryArr.splice(row.selectedIndex, 1);
       tableModule.switchTable(library.currentTable);
       reset();
+      editModule.setupEditing();
     }
     
      
     let markUnreadButton; 
-    let markAsUnread;
     const eventMarkUnread = () => {
       markUnreadButton = document.querySelector(".mark-as-unread.editor-button");
       markUnreadButton.addEventListener("click", () => markAsUnread());
-      markAsUnread = () => {
-        // add book obj to to-read array
-        toReadLibraryArr.unshift(row.selectedBookObj);
-        // remove book obj from read array
-        readLibraryArr.splice(row.selectedIndex, 1);
-        reset();
-        tableModule.switchTable();
-      }
+    }
+    let markAsUnread = () => {
+      // add book obj to to-read array
+      let arrToMutate = row.selectedBookObj;
+      delete arrToMutate.subject;
+      delete arrToMutate.rating;
+      delete arrToMutate.dateRead;
+      arrToMutate['priority'] = 0;
+      toReadLibraryArr.unshift(arrToMutate);
+
+      // remove book obj from read array
+      readLibraryArr.splice(row.selectedIndex, 1);
+      tableModule.switchTable(library.currentTable);
+      reset();
+      editModule.setupEditing();
     }
     
     let saveButton; 
