@@ -4,9 +4,10 @@ import tableModule from './table-module.js';
 
 const editModule = (function() {
 
-    let editorButtonsContainer = document.querySelector(".editor-buttons.container");
-
+    let editorButtonsContainer;
     const setupEditing = () => {
+      editorButtonsContainer = document.querySelector(".editor-buttons.container");
+
 
        // DISABLE HEADER BUTTONS
       const btnArr = [btnAddsBook, btnTogglesRead, btnTogglesToRead];
@@ -14,9 +15,6 @@ const editModule = (function() {
         btn.disabled = true;
       }
       tableModule.disableCellsNotOnCurrentRow();
-
-      console.log(`editModule: ${row.selectedBookObj}`);
-      let cells = row.selected.cells; 
 
       editorButtonsContainer.innerHTML = `
         <input type="image" class="mark-as-read editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Read" title="Mark as Read" width="20" style="display:none">
@@ -26,12 +24,14 @@ const editModule = (function() {
         <input type="image" class="delete editor-button" src="./images/Delete-Mingcute.svg" alt="Delete" title="Delete Entry" width="20">
       `;
 
-      eventBack(row.selectedBookObj);
-      eventMarkRead(row.selectedBookObj);
-      eventMarkUnread(row.selectedBookObj);
-      eventSave(cells, row.selectedBookObj);
+      // SAVE QUERY SELECTED ELEMENTS AND INITIALIZE EVENT LISTENERS 
+      eventBack();
+      eventMarkRead();
+      eventMarkUnread();
+      eventSave();
       eventDelete();
 
+      // REMOVE IRRELEVANT EDITING BUTTONS
       if (library.currentArr[0].title != undefined) {
         editorButtonsContainer.querySelector('.back').style.display = 'inline';
 
@@ -55,7 +55,7 @@ const editModule = (function() {
     let backButton;
     let eventBack = () => {
       backButton = document.querySelector(".back.editor-button");
-      backButton.addEventListener("click", () => goBack(row.selectedBookObj));
+      backButton.addEventListener("click", () => goBack());
     };
     let goBack  = () => {
       let indexReminder = row.selectedIndex;
@@ -68,16 +68,16 @@ const editModule = (function() {
     let markReadButton; 
     let eventMarkRead = () => { 
       markReadButton = document.querySelector(".mark-as-read.editor-button");
-      markReadButton.addEventListener("click", () => markAsRead(row.selectedBookObj));
+      markReadButton.addEventListener("click", () => markAsRead());
     }
     let markAsRead = () => {
       // add book obj to read array
+
       readLibraryArr.unshift(row.selectedBookObj);
       // remove book obj from to-read array
       toReadLibraryArr.splice(row.selectedIndex, 1);
+      tableModule.switchTable(library.currentTable);
       reset();
-      tableModule.switchTable();
-      // switch setting
     }
     
      
@@ -85,7 +85,7 @@ const editModule = (function() {
     let markAsUnread;
     const eventMarkUnread = () => {
       markUnreadButton = document.querySelector(".mark-as-unread.editor-button");
-      markUnreadButton.addEventListener("click", () => markAsUnread(row.selectedBookObj));
+      markUnreadButton.addEventListener("click", () => markAsUnread());
       markAsUnread = () => {
         // add book obj to to-read array
         toReadLibraryArr.unshift(row.selectedBookObj);
@@ -98,28 +98,21 @@ const editModule = (function() {
     
     let saveButton; 
     let saveCurrentRow;
-    const eventSave = (cells) => {
+    const eventSave = () => {
       saveButton = document.querySelector(".save.editor-button");
-      saveButton.addEventListener("click", () => saveCurrentRow);
+      saveButton.addEventListener("click", () => saveCurrentRow());
       saveCurrentRow = () => {
         // CHECK IF TABLE IS MISSING TEXT INPUT
         let nullOrFullPropertiesArr = [];
-        for (let i = 0; i < cells.length; i++) {
-
-            const userInput = cells[i].querySelector('input')?.value;
+        for (let i = 0; i < row.selected.cells.length; i++) {
+          const userInput = row.selected.cells[i].querySelector('input')?.value;
+          console.log(`user input for index ${i}: ${userInput}`);
           
-          if (userInput && userInput == "") {
-              nullOrFullPropertiesArr.push(null);
-          }
-          else if (userInput && userInput!= "") {
-              Object.keys(row.selectedBookObj)[i] = userInput;
-              nullOrFullPropertiesArr.push("full");
-          }
-          // SAVE RATING OR PRIORITY FOR LAST PROPERTY OF BOOK OBJECT
-          else if (userInput == undefined) {
+          // SAVE RATING OR PRIORITY 
+          if (userInput == undefined) {
               let numberIconsOn = 0;
               for (let j = 0; j < 5; j++) {
-                let icons = cells[i].querySelectorAll('img');
+                let icons = row.selected.cells[i].querySelectorAll('img');
                 if (icons[j].classList.contains('on')) {
                     numberIconsOn++;
                 }
@@ -131,15 +124,24 @@ const editModule = (function() {
                   row.selectedBookObj.priority = numberIconsOn;
               }
           }
+          else if (userInput != "") {
+            const keys = Object.keys(row.selectedBookObj);
+            row.selectedBookObj[keys[i]] = userInput;
+            nullOrFullPropertiesArr.push("full");
+          }
+          else {
+            nullOrFullPropertiesArr.push("null");
+          }
         }
+        console.log(`null or full arr: ${nullOrFullPropertiesArr}`);
         // IF TABLE MISSING TEXT INPUT(S), HIGHLIGHT IN RED AND DON'T ALLOW SAVE
-        if (nullOrFullPropertiesArr.includes(null)) {
-          for (let i = 0; i < cells.length-1; i++) {
-            if (nullOrFullPropertiesArr[i] == null) {
-              cells[i].classList.add('missing-input');
+        if (nullOrFullPropertiesArr.includes("null")) {
+          for (let i = 0; i < row.selected.cells.length-1; i++) {
+            if (nullOrFullPropertiesArr[i] == "null") {
+              row.selected.cells[i].classList.add('missing-input');
             }
             else {
-              cells[i].classList.remove('missing-input');
+              row.selected.cells[i].classList.remove('missing-input');
             }
           }
         }
@@ -151,16 +153,17 @@ const editModule = (function() {
       }
     }
       
-    function deleteCurrentRow() {
-      library.currentArr.splice(row.selectedIndex, 1);
-      library.currentTable.deleteRow(row.selectedIndex + 1);
-      reset();
-    }
+    
     let deleteButton;
     const eventDelete = () => {
       deleteButton = document.querySelector(".delete.editor-button");
       deleteButton.addEventListener("click", deleteCurrentRow);
       }
+    function deleteCurrentRow() {
+      library.currentArr.splice(row.selectedIndex, 1);
+      library.currentTable.deleteRow(row.selectedIndex + 1);
+      reset();
+    }
 
     const reset = () => {
       backButton.removeEventListener("click", goBack); 

@@ -23,7 +23,7 @@ btnTogglesRead.addEventListener("click", function() {
 });
 
 // OBJECT CONSTRUCTORS
-function bookToRead(title, author, type, subject, priority, dateRead) {
+function bookRead(title, author, type, subject, priority, dateRead) {
   this.title = title;
   this.author = author;
   this.type = type;
@@ -31,7 +31,7 @@ function bookToRead(title, author, type, subject, priority, dateRead) {
   this.priority = priority;
   this.dateRead = dateRead;
 }
-function bookRead(title, author, type, rating) {
+function bookToRead(title, author, type, rating) {
   this.title = title;
   this.author = author;
   this.type = type;
@@ -41,24 +41,29 @@ function bookRead(title, author, type, rating) {
 // ADD BOOK: EMPTY ROW IN TABLE & OBJ IN ARR
 btnAddsBook.addEventListener("click", () => {
   let newBook;
-  if (library.setting == "book-to-read") {
+  if (library.setting == "table-read") {
     newBook = new bookRead();
   }
-  else {
+  else if (library.setting == "table-to-read") {
     newBook = new bookToRead();
   }
   library.currentArr.unshift(newBook);
   let newRow = library.currentTbody.insertRow(0);
   for (let i = 0; i < Object.keys(newBook).length; i++) {
-    newRow.insertCell();
+    let newCell = newRow.insertCell();
+    newCell.innerHTML = `<input type="text" value="" data-index= "" data-key="">`;  
   }
-  tableModule.renderRow(newBook, newRow);
   row.selected = newRow;
   editModule.setupEditing();
 })
 
-// EDIT TABLE
+// SET UP EVENT LISTENERS TO EDIT CELLS OF TABLE
 library.currentTbody.addEventListener('click', function(event) {
+  row.selected = event.target.closest('tr');
+  editModule.setupEditing();
+})
+
+library.notCurrentTable.querySelector('tbody').addEventListener('click', function(event) {
   row.selected = event.target.closest('tr');
   editModule.setupEditing();
 })

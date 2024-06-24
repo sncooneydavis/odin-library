@@ -22,9 +22,8 @@ const tableModule = (function() {
 
   const renderRow = (bookObj, row) => {
     const cells = row.querySelectorAll('td');
-    console.log(cells);
     Object.keys(bookObj).forEach((key, index) => {
-      cells[index].innerHTML = `<input type="text" value="${bookObj[key]}" data-index= "${index}" data-key="${key}">`;      
+      cells[index].innerHTML = `<input type="text" value="${bookObj[key]}" data-index= "${index}" data-key="${key}">`;
     });
     renderRankCell(bookObj, row);
     if (library.setting == 'table-read') {
@@ -65,10 +64,10 @@ const tableModule = (function() {
       btnTogglesRead.disabled = false;
       btnTogglesToRead.disabled = true;
     }
-    else {
+    else if (library.setting == 'table-to-read') {
       library.setting = "table-read";
-      btnTogglesToRead.disabled = false;
       btnTogglesRead.disabled = true;
+      btnTogglesToRead.disabled = false;
     }
     library.currentTable.style.display = '';
     tableModule.renderTable();
@@ -83,7 +82,6 @@ const tableModule = (function() {
       }
     })
   }
-
 
   const enableAllRows = () => {
     document.querySelectorAll('tr').forEach(tr => {
