@@ -1,54 +1,94 @@
 import './shared.js';
-import { readLibraryArr, toReadLibraryArr, library, row, btnAddsBook, btnTogglesRead, btnTogglesToRead } from './shared.js';
+import { readLibraryArr, toReadLibraryArr, bookRead, bookToRead, library, row} from './shared.js';
 import tableModule from './table-module.js';
 
 const editModule = (function() {
+  let editorButtonsContainer;
+  let selectableRows; 
 
-    let editorButtonsContainer;
-    const setupEditing = () => {
-      editorButtonsContainer = document.querySelector(".editor-buttons.container");
+  // SET UP EVENT LISTENERS TO EDIT CELLS OF TABLE
+  const initEditing = () => {
+    selectableRows = library.currentTbody.querySelectorAll('tr');
+    selectableRows.forEach((selectableRow) => {
+      selectableRow.addEventListener('click', function() {
+        row.selected = this;
+        edit();
+      })
+    })
+  }
+  
+  function edit() {
+    // prevents event propagation, so clicking a new input does not reset other inputs
+    const inputs = row.selected.querySelectorAll('input');
+    inputs.forEach(input => {
+      input.addEventListener('click', (event) => {
+        event.stopPropagation();  
+      });
+    });
+    
+     // DISABLE HEADER BUTTONS
+    tableModule.disableHeaderButtons();
+    tableModule.disableCellsNotOnCurrentRow();
 
+    //ADD EDITOR BUTTONS
+    editorButtonsContainer = document.querySelector(".editor-buttons.container");
+    editorButtonsContainer.innerHTML = `
+      <input type="image" class="mark-as-read editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Read" title="Mark as Read" width="20">
+      <input type="image" class="mark-as-unread editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Not Read" title="Mark as Not Read" width="20">
+      <input type="image" class="back editor-button" src="./images/Back-Mingcute.svg" alt="Back" title="Don't Save Changes" width="20">
+      <input type="image" class="save editor-button" src="./images/Check-Mingcute.svg" alt="Save" title="Save Changes" width="20">
+      <input type="image" class="delete editor-button" src="./images/Delete-Mingcute.svg" alt="Delete" title="Delete Entry" width="20">
+    `;
 
-       // DISABLE HEADER BUTTONS
-      const btnArr = [btnAddsBook, btnTogglesRead, btnTogglesToRead];
-      for (let btn of btnArr) {
-        btn.disabled = true;
-      }
-      tableModule.disableCellsNotOnCurrentRow();
-
-      editorButtonsContainer.innerHTML = `
-        <input type="image" class="mark-as-read editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Read" title="Mark as Read" width="20" style="display:none">
-        <input type="image" class="mark-as-unread editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Not Read" title="Mark as Not Read" width="20"style="display:none">
-        <input type="image" class="back editor-button" src="./images/Back-Mingcute.svg" alt="Back" title="Don't Save Changes" width="20" style="display:none">
-        <input type="image" class="save editor-button" src="./images/Check-Mingcute.svg" alt="Save" title="Save Changes" width="20">
-        <input type="image" class="delete editor-button" src="./images/Delete-Mingcute.svg" alt="Delete" title="Delete Entry" width="20">
-      `;
-
-      // SAVE QUERY SELECTED ELEMENTS AND INITIALIZE EVENT LISTENERS 
-      eventBack();
-      eventMarkRead();
-      eventMarkUnread();
-      eventSave();
-      eventDelete();
-
-      // REMOVE IRRELEVANT EDITING BUTTONS
-      if (library.currentArr[0].title != undefined) {
-        editorButtonsContainer.querySelector('.back').style.display = 'inline';
-
-        if (library.setting == "table-to-read") {
-          editorButtonsContainer.querySelector('.mark-as-read').style.display = 'inline';
-          
+    // REMOVE IRRELEVANT EDITOR BUTTONS
+  
+      if (library.setting == "table-to-read") {
+        editorButtonsContainer.querySelector('.mark-as-unread').style.display = 'none';
+        if (library.currentArr[0].priority == undefined) {
+          editorButtonsContainer.querySelector('.mark-as-read').style.display = 'none';
+          editorButtonsContainer.querySelector('.back').style.display = 'none';
         }
-        else if (library.setting == "table-read") {
-          editorButtonsContainer.querySelector('.mark-as-unread').style.display = 'inline';
+      } 
+      else if (library.setting == "table-read") {
+        editorButtonsContainer.querySelector('.mark-as-read').style.display = 'none';
+        if (library.currentArr[0].rating == undefined) {
+          editorButtonsContainer.querySelector('.mark-as-unread').style.display = 'none';
+          editorButtonsContainer.querySelector('.back').style.display = 'none';
         }
       }
-
+    
       // PLACE EDITOR BUTTONS NEXT TO SELECTED ROW
       let rowRect = row.selected.getBoundingClientRect();
       let tableRect = library.currentTable.getBoundingClientRect();
       let yCoordinateOfCurrentRowsTop = rowRect.top - tableRect.top;
       editorButtonsContainer.style.top = `${yCoordinateOfCurrentRowsTop}px`;
+      
+      const rankCell = row.selected.querySelector('.rank-cell');
+      tableModule.renderUnselected(rankCell);
+    
+      // SAVE QUERY SELECTED ELEMENTS AND INITIALIZE EVENT LISTENERS  
+        eventRank();
+        eventBack();
+        eventMarkRead();
+        eventMarkUnread();
+        eventSave();
+        eventDelete();
+  }
+  
+    // EVENT LISTENERS ON RANK BUTTONS
+    let rankButtons;
+    let eventRank = () => {
+      rankButtons = document.querySelectorAll('.rating.button');
+      rankButtons.forEach((button) => {
+        button.addEventListener("click", (event) => rank(event));
+      })
+    }
+    let rank = (event) => {
+      event.stopPropagation();
+      const rankCell = row.selected.querySelector('.rank-cell');
+      let target = event.target; 
+      const dataOrder = parseInt(target.getAttribute('data-order'), 10);
+      tableModule.renderSelected(rankCell, dataOrder);
     }
 
     // EVENT LISTENERS + FXY FOR EDITOR BUTTONS
@@ -78,9 +118,11 @@ const editModule = (function() {
 
       // remove book obj from to-read array
       toReadLibraryArr.splice(row.selectedIndex, 1);
-      tableModule.switchTable(library.currentTable);
       reset();
-      editModule.setupEditing();
+      tableModule.switchTable(library.currentTable);
+      row.selected = library.currentTable.rows[1];
+      
+      edit();
     }
     
      
@@ -100,69 +142,71 @@ const editModule = (function() {
 
       // remove book obj from read array
       readLibraryArr.splice(row.selectedIndex, 1);
-      tableModule.switchTable(library.currentTable);
       reset();
-      editModule.setupEditing();
+      tableModule.switchTable(library.currentTable);
+      row.selected = library.currentTable.rows[1];
+      editModule.edit();
     }
     
     let saveButton; 
-    let saveCurrentRow;
     const eventSave = () => {
       saveButton = document.querySelector(".save.editor-button");
       saveButton.addEventListener("click", () => saveCurrentRow());
-      saveCurrentRow = () => {
-        // CHECK IF TABLE IS MISSING TEXT INPUT
-        let nullOrFullPropertiesArr = [];
-        for (let i = 0; i < row.selected.cells.length; i++) {
-          const userInput = row.selected.cells[i].querySelector('input')?.value;
-          console.log(`user input for index ${i}: ${userInput}`);
-          
-          // SAVE RATING OR PRIORITY 
-          if (userInput == undefined) {
-              let numberIconsOn = 0;
-              for (let j = 0; j < 5; j++) {
-                let icons = row.selected.cells[i].querySelectorAll('img');
-                if (icons[j].classList.contains('on')) {
-                    numberIconsOn++;
-                }
-              }
-              if (library.setting == "table-read") {
-                  row.selectedBookObj.rating = numberIconsOn;
-              }
-              else {
-                  row.selectedBookObj.priority = numberIconsOn;
-              }
-          }
-          else if (userInput != "") {
-            const keys = Object.keys(row.selectedBookObj);
-            row.selectedBookObj[keys[i]] = userInput;
-            nullOrFullPropertiesArr.push("full");
+    }
+    let saveCurrentRow = () => {
+      const keys = Object.keys(row.selectedBookObj);
+      // NEW OBJ: WILL BE SAVED IF FULL, WILL FORCE RETURN IF NOT
+      let storageBookObj;
+      if (library.setting == "table-read") {
+        storageBookObj = new bookRead();
+      }
+      else if (library.setting == 'table-to-read') {
+        storageBookObj = new bookToRead();
+      }
+      // INPUT IS TEXT OR DATE
+      for (let i = 0; i < keys.length; i++) {
+        const inputElem = row.selected.cells[i].querySelector('input');
+        if (inputElem.type == 'text' || inputElem.type == 'date') {
+          if (inputElem.value) {              
+            storageBookObj[keys[i]] = inputElem.value;
+            row.selected.cells[i].classList.remove('missing-input');
           }
           else {
-            nullOrFullPropertiesArr.push("null");
+            storageBookObj[keys[i]] = "null";
+            row.selected.cells[i].classList.add('missing-input');
           }
         }
-        console.log(`null or full arr: ${nullOrFullPropertiesArr}`);
-        // IF TABLE MISSING TEXT INPUT(S), HIGHLIGHT IN RED AND DON'T ALLOW SAVE
-        if (nullOrFullPropertiesArr.includes("null")) {
-          for (let i = 0; i < row.selected.cells.length-1; i++) {
-            if (nullOrFullPropertiesArr[i] == "null") {
-              row.selected.cells[i].classList.add('missing-input');
-            }
-            else {
-              row.selected.cells[i].classList.remove('missing-input');
-            }
+        // INPUT IS RANK BUTTONS
+        else if (inputElem.type == 'image') {
+          let rankCount = 0;
+          for (let j = 0; j < 5; j++) {
+            let icons = row.selected.cells[i].querySelectorAll('.rating.button');
+              if (icons[j].classList.contains('on')) {
+                  rankCount++;
+              }
           }
-        }
-        // IF TABLE HAS ALL TEXT INPUTS, SAVE TO LIBRARY ARR AND RESET
-        else {
-          library.currentArr[row.selectedIndex] = row.selectedBookObj;
-          reset();
+          if (rankCount != 0) {
+            storageBookObj[keys[i]] = rankCount;
+            row.selected.cells[i].classList.remove('missing-input');
+          }
+          else if (rankCount == 0) {
+            storageBookObj[keys[i]] = "null";
+            row.selected.cells[i].classList.add('missing-input');
+          }
         }
       }
+      // CHECK IF STORAGE OBJ IS FULL 
+      for (let key in row.selectedBookObj) {
+        if (storageBookObj[key] == "null") {
+          return;
+        }
+      }
+      for(let key in row.selectedBookObj) {
+        row.selectedBookObj[key] = storageBookObj[key];
+      }
+      reset();
     }
       
-    
     let deleteButton;
     const eventDelete = () => {
       deleteButton = document.querySelector(".delete.editor-button");
@@ -175,6 +219,12 @@ const editModule = (function() {
     }
 
     const reset = () => {
+      selectableRows.forEach((input) => {
+        input.removeEventListener("click", edit);
+      })
+      rankButtons.forEach((button) => {
+        button.removeEventListener("click", rank);
+      })
       backButton.removeEventListener("click", goBack); 
       markReadButton.removeEventListener("click", markAsRead);
       markUnreadButton.removeEventListener("click", markAsUnread);
@@ -182,19 +232,20 @@ const editModule = (function() {
       deleteButton.removeEventListener("click", deleteCurrentRow);
       editorButtonsContainer.innerHTML = '';
       // ENABLE HEADER BUTTONS, CELLS FOR EDITING
-      btnAddsBook.disabled = false;
+      tableModule.btnAddsBook.disabled = false;
       if (library.setting == "table-read") {
-        btnTogglesToRead.disabled = false;
+        tableModule.btnTogglesToRead.disabled = false;
       }
       else if (library.setting == "table-to-read") {
-        btnTogglesRead.disabled = false;
+        tableModule.btnTogglesRead.disabled = false;
       }
       tableModule.enableAllRows();
     }
-    
-    return {
-      setupEditing: setupEditing,
-    }
+  
+  return {
+    initEditing: initEditing,
+    edit: edit,
+  }
 })();
 
 export default editModule;

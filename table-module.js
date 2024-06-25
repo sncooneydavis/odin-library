@@ -1,9 +1,13 @@
+import editModule from './edit-module.js';
 import './shared.js'; 
-import { library, row, btnTogglesRead, btnTogglesToRead } from './shared.js';
+import {library, row} from './shared.js';
 
 
 // EDIT TEXT IN TABLE CELLS
 const tableModule = (function() {
+  const btnAddsBook = document.querySelector(".add.button");
+  const btnTogglesRead = document.querySelector('.toggle-read');
+  const btnTogglesToRead = document.querySelector('.toggle-to-read');
 
   const renderTable = () => {
     library.currentTbody.innerHTML = "";
@@ -17,6 +21,9 @@ const tableModule = (function() {
       if (library.setting == 'table-read') {
         renderDateCell(book, newRow);
       } 
+      else if (library.setting == 'table-to-read') {
+        return;
+      }
     }) 
   }
 
@@ -32,24 +39,65 @@ const tableModule = (function() {
   }
 
   const renderRankCell = (bookObj, newRow) => {
-    let rankCellHTML = "";
+    let rankCell;
     if (library.setting == "table-read") {
-        const rankCell = newRow.cells[4];  
-        // Populate with rating stars
-        for (let i = 0; i < 5; i++) {
-          rankCellHTML += `<img class='rating button ${i < bookObj.rating ? 'on' : 'off'}' src='./images/Star-Mingcute.svg' alt="rating star" width='5'>`;
-        }
-        rankCell.innerHTML = rankCellHTML;
-    } 
-    else {
-      const rankCell = newRow.cells[3];  
-      // Populate with priority flags
-      for (let i = 0; i < 5; i++) {
-        rankCellHTML += `<img class='priority button ${i < bookObj.priority ? 'on' : 'off'}' src='./images/Flag-Mingcute.svg' alt="priority" width='5'>`;
+      rankCell = newRow.cells[4];
       }
-      rankCell.innerHTML = rankCellHTML;
+    else if (library.setting == 'table-to-read') {
+      rankCell = newRow.cells[3];  
+    }
+      rankCell.classList.add('rank-cell');        
+    // Populate with rating stars/priority flags
+    // from book saved in array 
+    if (bookObj.rating) {
+      renderSelected(rankCell, bookObj.rating-1);
+    }
+    // from new (empty) book in array 
+    else if (bookObj.priority) {
+      renderSelected(rankCell, bookObj.priority-1);
+    }
+    else {
+      renderUnselected(rankCell);
     }
   }
+
+  const renderUnselected = (rankCell) => {
+    rankCell.innerHTML = "";
+    if (library.setting == "table-read") {
+      for (let i = 0; i < 5; i++) {
+        rankCell.innerHTML += `
+          <input type="image" class="rating button" data-order="${i}" src="./images/Star-Mingcute.svg" alt="Rate" width="20">
+        `;
+      }
+    }
+    else if (library.setting == "table-to-read") {
+      for (let i = 0; i < 5; i++) {
+        rankCell.innerHTML += `
+          <input type="image" class="rating button" data-order="${i}" src="./images/Flag-Mingcute.svg" alt="Rate" width="20">
+        `;
+      }
+    }
+  }
+
+  const renderSelected = (rankCell, rating) => {
+    rankCell.innerHTML = "";
+    if (library.setting == "table-read") {
+      for (let i = 0; i < 5; i++) {
+        rankCell.innerHTML += `
+          <input type="image" class="rating button ${i <= rating ? 'on' : 'off'}" data-order="${i}" src="./images/Star-Fill-Mingcute.svg" alt="Rate" width="20">
+        `;
+      } 
+    }
+    else if (library.setting == "table-to-read") {
+      for (let i = 0; i < 5; i++) {
+        rankCell.innerHTML += `
+          <input type="image" class="rating button ${i <= rating ? 'on' : 'off'}" data-order="${i}" src="./images/Flag-Fill-Mingcute.svg" alt="Rate" width="20">
+        `;
+      } 
+    }
+  }
+
+ 
 
   const renderDateCell = (bookObj, newRow) => {
     const dateCell = newRow.cells[5];
@@ -81,13 +129,21 @@ const tableModule = (function() {
       btnTogglesToRead.disabled = false;
     }
     library.currentTable.style.display = '';
-    tableModule.renderTable();
+    renderTable();
+    editModule.initEditing();
+  }
+
+  const disableHeaderButtons = () => {
+    const btnArr = [tableModule.btnAddsBook, tableModule.btnTogglesRead, tableModule.btnTogglesToRead];
+    for (let btn of btnArr) {
+      btn.disabled = true;
+    }
   }
 
   const disableCellsNotOnCurrentRow = () => {
     document.querySelectorAll('tr').forEach(tr => {
       if (tr !== row.selected) {
-        tr.querySelectorAll('input, img').forEach(input => {
+        tr.querySelectorAll('input, svg').forEach(input => {
           input.disabled = true;
         }) 
       }
@@ -103,15 +159,22 @@ const tableModule = (function() {
   }
 
   return {
+    btnAddsBook: btnAddsBook,
+    btnTogglesRead: btnTogglesRead,
+    btnTogglesToRead: btnTogglesToRead,
     renderTable: renderTable,
     renderRow: renderRow,
     renderRankCell: renderRankCell,
     renderDateCell: renderDateCell,
+    renderSelected: renderSelected, 
+    renderUnselected: renderUnselected,
     getTodaysDate: getTodaysDate,
     switchTable: switchTable,
+    disableHeaderButtons: disableHeaderButtons,
     disableCellsNotOnCurrentRow: disableCellsNotOnCurrentRow,
     enableAllRows: enableAllRows,
   };
+
 })(); 
 
 export default tableModule;

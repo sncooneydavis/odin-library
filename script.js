@@ -1,45 +1,33 @@
 //import './shared.js';
-import { library, row, btnAddsBook, btnTogglesRead, btnTogglesToRead } from './shared.js';
+import './shared.js';
+import { bookRead, bookToRead, library, row} from './shared.js';
 import tableModule from './table-module.js';
 import editModule from './edit-module.js';
 
 
 // ON LOAD
 library.setting = "table-read";
-btnTogglesRead.disabled = true;
+tableModule.btnTogglesRead.disabled = true;
 library.notCurrentTable.style.display = 'none';
 //new Tablesort(document.getElementById('#table-to-read'));
 //new Tablesort(document.getElementById('#table-read'));
 tableModule.renderTable();
+editModule.initEditing();
 
 
 // TOGGLE TABLE FXS
-btnTogglesToRead.addEventListener("click", function() {
+tableModule.btnTogglesToRead.addEventListener("click", function() {
   tableModule.switchTable(library.currentTable);
 });
 
-btnTogglesRead.addEventListener("click", function() {
+tableModule.btnTogglesRead.addEventListener("click", function() {
   tableModule.switchTable(library.currentTable);
 });
 
-// OBJECT CONSTRUCTORS
-function bookRead(title, author, type, subject, priority, dateRead) {
-  this.title = title;
-  this.author = author;
-  this.type = type;
-  this.subject = subject;
-  this.priority = priority;
-  this.dateRead = dateRead;
-}
-function bookToRead(title, author, type, rating) {
-  this.title = title;
-  this.author = author;
-  this.type = type;
-  this.rating = rating;
-}
+
 
 // ADD BOOK: EMPTY ROW IN TABLE & OBJ IN ARR
-btnAddsBook.addEventListener("click", () => {
+tableModule.btnAddsBook.addEventListener("click", () => {
   let newBook;
   if (library.setting == "table-read") {
     newBook = new bookRead();
@@ -57,18 +45,10 @@ btnAddsBook.addEventListener("click", () => {
   // add rank buttons 
   tableModule.renderRankCell(newBook, newRow);
   tableModule.renderDateCell(newBook, newRow);
-  editModule.setupEditing();
+  row.selected = library.currentTable.rows[1];
+  editModule.edit();
 })
 
-// SET UP EVENT LISTENERS TO EDIT CELLS OF TABLE
-library.currentTbody.addEventListener('click', function(event) {
-  row.selected = event.target.closest('tr');
-  editModule.setupEditing();
-})
 
-library.notCurrentTable.querySelector('tbody').addEventListener('click', function(event) {
-  row.selected = event.target.closest('tr');
-  editModule.setupEditing();
-})
 
  

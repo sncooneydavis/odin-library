@@ -83,6 +83,22 @@ export let toReadLibraryArr = [
     
 ]; 
 
+// OBJECT CONSTRUCTORS
+export function bookRead(title, author, type, subject, priority, dateRead) {
+    this.title = title;
+    this.author = author;
+    this.type = type;
+    this.subject = subject;
+    this.priority = priority;
+    this.dateRead = dateRead;
+  }
+ export function bookToRead(title, author, type, rating) {
+    this.title = title;
+    this.author = author;
+    this.type = type;
+    this.rating = rating;
+  }
+
 export const library = {
     // setting = string "table-read" or "table-to-read"
     _setting: "",  
@@ -134,6 +150,5 @@ export const row = {
     } 
 };
 
-export const btnAddsBook = document.querySelector(".add.button");
-export const btnTogglesRead = document.querySelector('.toggle-read');
-export const btnTogglesToRead = document.querySelector('.toggle-to-read');
+
+

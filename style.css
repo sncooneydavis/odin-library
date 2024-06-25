@@ -1,39 +1,73 @@
 * {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background-color: var(--off-black);
+    color: var(--off-white);
 }
 
+:root {
+  --off-white: #fcf8ff;     
+  --purple: #8755ff;   
+  --off-black: #2f2f2f;     
+  --pink: #ff3292;  
+  --blue-purple: #5a00ff;   
+  --yellow: #FFD700;
+  --light-yellow: #FFF9BB;
+  --red: #ff0000;   
+  --green: #7fff00;     
+}
 
 .container.main {
     display: flex;
+    flex-direction: column;
 }
 
-.container.top {
+.container.heading {
     display: flex;
-
+    flex-direction: column;
+    height: auto;
 }
 
-.container.text-heading {
+.header-text.button {
+  background: none;
+  border: none;
+  height: auto;
+  padding: 0;
+  cursor: pointer;
+  transition-duration: 0.3s;
+
+}
+.header-text.button:hover {
+  font-weight: bolder;
+}
+
+.header-text.button:disabled {
+  color: inherit;
+  font-weight: inherit;
+}
+
+.add.button {
+  height: 48px;
+  fill: var(--off-white);
+}
+
+.dim {
+  color: lightgrey;
+}
+
+
+.container.books-text {
     display: flex;
-
 }
 
-.bright-text {
- font-size: ;
- font-weight: ;
- color: 
- DISABLE BUTTON
-
-}
-
-.dim-text {
-
+.container.tables-and-editor-buttons {
+  display: flex;
 }
 
 .missing-input {
 
 }
 
-td:hover {
+tr:hover {
   background-color: #f0f0f0;  /* Light grey background */
 }
 .sidebar-for-buttons-movement{
@@ -46,3 +80,15 @@ td:hover {
 
 .editor-button {
 }
+
+/* Ratings Buttons */
+.rank-cell {
+  display: flex;
+  flex-wrap: none;
+  
+}
+/* off */
+.rating.button.off {
+  display:none;
+}
+
