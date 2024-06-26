@@ -1,11 +1,12 @@
 import editModule from './edit-module.js';
 import './shared.js'; 
-import {library, row} from './shared.js';
+import {bookRead, bookToRead, library, row} from './shared.js';
 
 
 // EDIT TEXT IN TABLE CELLS
 const tableModule = (function() {
-  const btnAddsBook = document.querySelector(".add.button");
+  const btnAddsReadBook = document.querySelector(".add.button");
+  const btnAddsUnreadBook = document.querySelector(".add.button");
   const btnTogglesRead = document.querySelector('.toggle-read');
   const btnTogglesToRead = document.querySelector('.toggle-to-read');
 
@@ -18,10 +19,10 @@ const tableModule = (function() {
         newCell.innerHTML = `<input type="text" value="${book[key]}" data-index= "${index}" data-key="${key}">`;       
       });
       renderRankCell(book, newRow);
-      if (library.setting == 'table-read') {
+      if (library.setting == "table-read") {
         renderDateCell(book, newRow);
       } 
-      else if (library.setting == 'table-to-read') {
+      else if (library.setting == "table-to-read") {
         return;
       }
     }) 
@@ -43,7 +44,7 @@ const tableModule = (function() {
     if (library.setting == "table-read") {
       rankCell = newRow.cells[4];
       }
-    else if (library.setting == 'table-to-read') {
+    else if (library.setting == "table-to-read") {
       rankCell = newRow.cells[3];  
     }
       rankCell.classList.add('rank-cell');        
@@ -120,7 +121,7 @@ const tableModule = (function() {
       btnTogglesRead.disabled = false;
       btnTogglesToRead.disabled = true;
     }
-    else if (library.setting == 'table-to-read') {
+    else if (library.setting == "table-to-read") {
       library.setting = "table-read";
       btnTogglesRead.disabled = true;
       btnTogglesToRead.disabled = false;
@@ -130,8 +131,33 @@ const tableModule = (function() {
     editModule.initEditing();
   }
 
+  const addBook = () => {
+    let newBook;
+    if (library.setting == "table-read") {
+      newBook = new bookRead();
+    }
+    else if (library.setting == "table-to-read") {
+      newBook = new bookToRead();
+    }
+    library.currentArr.unshift(newBook);
+    let newRow = library.currentTbody.insertRow(0);
+    row.selected = newRow;
+    for (let i = 0; i < Object.keys(newBook).length; i++) {
+      let newCell = newRow.insertCell();
+      newCell.innerHTML = `<input type="text" value="" data-index= "" data-key="">`;  
+    }
+    // add rank buttons 
+    tableModule.renderRankCell(newBook, newRow);
+    if (library.setting == "table-read"){
+      tableModule.renderDateCell(newBook, newRow);
+    }
+    
+    row.selected = library.currentTable.rows[1];
+    editModule.edit();
+  }
+
   const disableHeaderButtons = () => {
-    const btnArr = [tableModule.btnAddsBook, tableModule.btnTogglesRead, tableModule.btnTogglesToRead];
+    const btnArr = [tableModule.btnAddsUnreadBook, tableModule.btnAddsReadBook, tableModule.btnTogglesRead, tableModule.btnTogglesToRead];
     for (let btn of btnArr) {
       btn.disabled = true;
     }
@@ -163,7 +189,8 @@ const tableModule = (function() {
   }
 
   return {
-    btnAddsBook: btnAddsBook,
+    btnAddsReadBook: btnAddsReadBook,
+    btnAddsUnreadBook: btnAddsUnreadBook,
     btnTogglesRead: btnTogglesRead,
     btnTogglesToRead: btnTogglesToRead,
     renderTable: renderTable,
@@ -174,6 +201,7 @@ const tableModule = (function() {
     renderUnselected: renderUnselected,
     getTodaysDate: getTodaysDate,
     switchTable: switchTable,
+    addBook: addBook,
     disableHeaderButtons: disableHeaderButtons,
     disableCellsNotOnCurrentRow: disableCellsNotOnCurrentRow,
     enableAllRows: enableAllRows,

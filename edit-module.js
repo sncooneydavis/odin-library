@@ -160,7 +160,7 @@ const editModule = (function() {
       if (library.setting == "table-read") {
         storageBookObj = new bookRead();
       }
-      else if (library.setting == 'table-to-read') {
+      else if (library.setting == "table-to-read") {
         storageBookObj = new bookToRead();
       }
       // INPUT IS TEXT OR DATE
@@ -228,7 +228,8 @@ const editModule = (function() {
       deleteButton.removeEventListener("click", deleteCurrentRow);
       editorContainer.innerHTML = '';
       // ENABLE HEADER BUTTONS, CELLS FOR EDITING
-      tableModule.btnAddsBook.disabled = false;
+      tableModule.btnAddsReadBook.disabled = false;
+      tableModule.btnAddsUnreadBook.disabled = false;
       if (library.setting == "table-read") {
         tableModule.btnTogglesToRead.disabled = false;
       }

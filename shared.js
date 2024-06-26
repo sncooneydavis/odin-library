@@ -113,12 +113,12 @@ export const library = {
 
     get currentTable() {
         return document.querySelector(this._setting
-        === "table-read" ? "#table-read" : "#table-to-read");
+        == "table-read" ? "#table-read" : "#table-to-read");
     },
 
     get notCurrentTable() {
         return document.querySelector(this._setting
-        === "table-read" ? "#table-to-read" : "#table-read");
+        == "table-read" ? "#table-to-read" : "#table-read");
     },
 
     get currentTbody() {
