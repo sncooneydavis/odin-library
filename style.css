@@ -98,7 +98,12 @@ width: 4vw;
 table { 
 border-collapse: collapse; 
 width: 95%;
+
 } 
+
+thead {
+  height: 11vh;
+}
 
 th, td { 
 text-align: left; 
@@ -125,6 +130,10 @@ border: solid var(--purple) .2vw;
 
 tbody tr.hovering {
 border: solid var(--purple) .2vw; 
+}
+
+input:disabled, button:disabled {
+  cursor: default;
 }
 
 table input {
