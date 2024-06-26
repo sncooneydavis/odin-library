@@ -126,7 +126,7 @@ export const library = {
     },
 
     get currentArr() {
-        return this._setting === "table-read" ? readLibraryArr : toReadLibraryArr;
+        return this._setting == "table-read" ? readLibraryArr : toReadLibraryArr;
     },
 };
 
@@ -146,7 +146,7 @@ export const row = {
     },
 
     get selectedIndex() {
-        return this._selected.rowIndex - 1;
+        return this._selected.rowIndex -1;
     } 
 };
 

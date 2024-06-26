@@ -1,94 +1,185 @@
 * {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    background-color: var(--off-black);
-    color: var(--off-white);
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  background-color: var(--off-black);
+  color: var(--off-white);
 }
 
 :root {
-  --off-white: #fcf8ff;     
-  --purple: #8755ff;   
-  --off-black: #2f2f2f;     
-  --pink: #ff3292;  
-  --blue-purple: #5a00ff;   
-  --yellow: #FFD700;
-  --light-yellow: #FFF9BB;
-  --red: #ff0000;   
-  --green: #7fff00;     
+--off-white: #fcf8ff;     
+--purple: #966afc;   
+--off-black: #2f2f2f;     
+--pink: #ff3292;  
+--blue-purple: #5a00ff;   
+--yellow: #FFD700;
+--light-yellow: #FFF9BB;
+--red: #ff0000; 
+--light-red:#f9a4a4;
+--green: #7fff00;     
 }
 
 .container.main {
-    display: flex;
-    flex-direction: column;
+display: flex;
+flex-direction: column;
+padding-top: 3vh;
+padding-left: 3vw;
+padding-right: 3vw;
 }
 
 .container.heading {
-    display: flex;
-    flex-direction: column;
-    height: auto;
+display: flex;
+flex-direction: row;
+height: auto;
+}
+
+#ru-paul {
+display: flex;
+flex: auto;
+height: 25vw;
+}
+
+.container.heading.right {
+display: flex;
+flex-direction: column;
+justify-content: center;
+}
+
+.title-text {
+color: var(--blue-purple);
+font-size: 4vw;
+font-style: italic;
+}
+
+.header-text {
+font-size: 2.8vw;
+color: var(--blue-purple);
+}
+
+.container.books-text {
+display: flex;
+justify-content: center;
 }
 
 .header-text.button {
-  background: none;
-  border: none;
-  height: auto;
-  padding: 0;
-  cursor: pointer;
-  transition-duration: 0.3s;
+background: none;
+border: none;
+height: auto;
+padding: 0;
+cursor: pointer;
+transition-duration: 0.25s;
 
 }
 .header-text.button:hover {
-  font-weight: bolder;
+font-weight: bolder;
 }
 
 .header-text.button:disabled {
-  color: inherit;
-  font-weight: inherit;
-}
-
-.add.button {
-  height: 48px;
-  fill: var(--off-white);
-}
-
-.dim {
-  color: lightgrey;
-}
-
-
-.container.books-text {
-    display: flex;
+color: inherit;
+font-weight: inherit;
 }
 
 .container.tables-and-editor-buttons {
-  display: flex;
+display: flex;
+flex-direction: row;
+padding-top: 3vh;
+width: 95vw; 
+}
+
+.title-row {
+height: 100%;
+display: flex;
+flex-direction: row;
+align-items: center;
+}
+
+.add.button {
+width: 4vw;
+}
+
+table { 
+border-collapse: collapse; 
+width: 95%;
+} 
+
+th, td { 
+text-align: left; 
+border: none;
+}
+
+th {
+font-weight: 600;
+font-size: 2.5vw;
+}
+
+tr {
+  margin: 0;
+  padding: 0;
+}
+
+td {
+  padding: 0;
+}
+
+tbody tr:hover {
+border: solid var(--purple) .2vw; 
+}
+
+tbody tr.hovering {
+border: solid var(--purple) .2vw; 
+}
+
+table input {
+color: inherit;
+border: none;
+height: 5.5vh;
+}
+
+table input:focus {
+outline:none;
+background-color: var(--light-yellow);
+color: var(--off-black);
+}
+
+table input[type=text] {
+text-overflow: ellipsis;
+width: 98%;
+font-size: 1.8vw;
+font-weight: 300;
+}
+
+input[type="date"] {
+font-size: 1.5vw;
+font-weight: 320;
+width: 95%;
 }
 
 .missing-input {
-
+  background-color: var(--light-red);
 }
 
-tr:hover {
-  background-color: #f0f0f0;  /* Light grey background */
+.date-input::-webkit-calendar-picker-indicator {
+display: none;
 }
+
+.rank-cell {
+display: flex;
+width: 100%;
+flex-direction: row;
+}
+
+.rating.button {
+  width: 2.2vw;
+}
+
 .sidebar-for-buttons-movement{
-  position: relative;
+position: relative;
+padding: 1.2vw;
 }
 
 .editor-buttons.container{
-  position: absolute;
+position: absolute;
 }
 
-.editor-button {
-}
-
-/* Ratings Buttons */
-.rank-cell {
-  display: flex;
-  flex-wrap: none;
-  
-}
 /* off */
 .rating.button.off {
-  display:none;
+display:none;
 }
-

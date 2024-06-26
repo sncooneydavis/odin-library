@@ -16,15 +16,19 @@ editModule.initEditing();
 
 
 // TOGGLE TABLE FXS
-tableModule.btnTogglesToRead.addEventListener("click", function() {
+tableModule.btnTogglesToRead.addEventListener("click", function(event) {
   tableModule.switchTable(library.currentTable);
+  event.currentTarget.style.color = 'var(--off-white)';
+  tableModule.btnTogglesRead.style.color = 'var(--blue-purple)';
+
+  
 });
 
-tableModule.btnTogglesRead.addEventListener("click", function() {
+tableModule.btnTogglesRead.addEventListener("click", function(event) {
   tableModule.switchTable(library.currentTable);
+  event.currentTarget.style.color = 'var(--off-white)';
+  tableModule.btnTogglesToRead.style.color = 'var(--blue-purple)';
 });
-
-
 
 // ADD BOOK: EMPTY ROW IN TABLE & OBJ IN ARR
 tableModule.btnAddsBook.addEventListener("click", () => {

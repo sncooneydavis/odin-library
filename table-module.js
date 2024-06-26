@@ -66,14 +66,14 @@ const tableModule = (function() {
     if (library.setting == "table-read") {
       for (let i = 0; i < 5; i++) {
         rankCell.innerHTML += `
-          <input type="image" class="rating button" data-order="${i}" src="./images/Star-Mingcute.svg" alt="Rate" width="20">
+          <input type="image" class="rating button" data-order="${i}" src="./images/Star-Mingcute.svg" alt="Rate">
         `;
       }
     }
     else if (library.setting == "table-to-read") {
       for (let i = 0; i < 5; i++) {
         rankCell.innerHTML += `
-          <input type="image" class="rating button" data-order="${i}" src="./images/Flag-Mingcute.svg" alt="Rate" width="20">
+          <input type="image" class="rating button" data-order="${i}" src="./images/Flag-Mingcute.svg" alt="Rate">
         `;
       }
     }
@@ -84,28 +84,26 @@ const tableModule = (function() {
     if (library.setting == "table-read") {
       for (let i = 0; i < 5; i++) {
         rankCell.innerHTML += `
-          <input type="image" class="rating button ${i <= rating ? 'on' : 'off'}" data-order="${i}" src="./images/Star-Fill-Mingcute.svg" alt="Rate" width="20">
+          <input type="image" class="rating button ${i <= rating ? 'on' : 'off'}" data-order="${i}" src="./images/Star-Fill-Mingcute.svg" alt="Rate">
         `;
       } 
     }
     else if (library.setting == "table-to-read") {
       for (let i = 0; i < 5; i++) {
         rankCell.innerHTML += `
-          <input type="image" class="rating button ${i <= rating ? 'on' : 'off'}" data-order="${i}" src="./images/Flag-Fill-Mingcute.svg" alt="Rate" width="20">
+          <input type="image" class="rating button ${i <= rating ? 'on' : 'off'}" data-order="${i}" src="./images/Flag-Fill-Mingcute.svg" alt="Rate">
         `;
       } 
     }
   }
 
- 
-
   const renderDateCell = (bookObj, newRow) => {
     const dateCell = newRow.cells[5];
     if (bookObj.dateRead) {
-      dateCell.innerHTML = `<input type='date' value=${bookObj.dateRead}>`;
+      dateCell.innerHTML = `<input type='date'  class='date-input' value=${bookObj.dateRead}>`;
     }
     else {
-      dateCell.innerHTML = `<input type='date' value=${getTodaysDate()}>`;
+      dateCell.innerHTML = `<input type='date'  class='date-input' value=${getTodaysDate()}>`;
     }
   }
   const getTodaysDate = () => {
@@ -116,7 +114,6 @@ const tableModule = (function() {
   }
 
   const switchTable = (tableSwitchFrom) => {
-    tableSwitchFrom.classList.remove('dim');
     tableSwitchFrom.style.display = 'none';
     if (library.setting == "table-read") {
       library.setting = "table-to-read";
@@ -143,17 +140,24 @@ const tableModule = (function() {
   const disableCellsNotOnCurrentRow = () => {
     document.querySelectorAll('tr').forEach(tr => {
       if (tr !== row.selected) {
-        tr.querySelectorAll('input, svg').forEach(input => {
+        tr.style.border = 'none';
+        tr.querySelectorAll('input').forEach(input => {
           input.disabled = true;
         }) 
       }
+      else if (tr == row.selected) {
+        tr.classList.add('hovering');
+      }
     })
   }
+  
 
   const enableAllRows = () => {
     document.querySelectorAll('tr').forEach(tr => {
-      tr.querySelectorAll('input, img').forEach(input => {
+      tr.querySelectorAll('input').forEach(input => {
         input.disabled = false;
+        tr.style.border = '';
+        tr.classList.remove('hovering');
       }) 
     })
   }
