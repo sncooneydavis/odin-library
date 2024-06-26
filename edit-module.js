@@ -22,19 +22,16 @@ const editModule = (function() {
      // DISABLE ALL BUT SELECTED ROW AND EDITING BTNs
      tableModule.disableHeaderButtons();
      tableModule.disableCellsNotOnCurrentRow();
-     //selectableRows.forEach((selectableRow) => {
-     // if (selectableRow != row.selected) {}
-     // input.removeEventListener("click", edit);
-    //})
+
 
     //ADD EDITOR BUTTONS
     editorContainer = document.querySelector(".editor-buttons.container");
     editorContainer.innerHTML = `
-      <input type="image" class="back editor-button" src="./images/Back-Mingcute.svg" alt="Back" title="Don't Save Changes" width="20">
-      <input type="image" class="mark-as-read editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Read" title="Mark as Read" width="20">
-      <input type="image" class="mark-as-unread editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Not Read" title="Mark as Not Read" width="20">
-      <input type="image" class="save editor-button" src="./images/Check-Mingcute.svg" alt="Save" title="Save Changes" width="20">
-      <input type="image" class="delete editor-button" src="./images/Delete-Mingcute.svg" alt="Delete" title="Delete Entry" width="20">
+      <input type="image" class="back editor-button" src="./images/Back-Mingcute.svg" alt="Back" title="Don't Save Changes">
+      <input type="image" class="mark-as-read editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Read" title="Mark as Read" >
+      <input type="image" class="mark-as-unread editor-button" src="./images/Mark-Read-Mingcute.svg" alt="Mark as Not Read" title="Mark as Not Read" >
+      <input type="image" class="save editor-button" src="./images/Check-Mingcute.svg" alt="Save" title="Save Changes">
+      <input type="image" class="delete editor-button" src="./images/Delete-Mingcute.svg" alt="Delete" title="Delete Entry">
     `;
 
     // REMOVE IRRELEVANT EDITOR BUTTONS
@@ -64,6 +61,7 @@ const editModule = (function() {
       console.log('container middle',rowMiddle)
       editorContainer.style.top = `${rowMiddle - editorContainerHalfHeight}px`;
       
+      // EDIT RANK CELL
       const rankCell = row.selected.querySelector('.rank-cell');
       tableModule.renderUnselected(rankCell);
     
@@ -79,7 +77,7 @@ const editModule = (function() {
     // EVENT LISTENERS ON RANK BUTTONS
     let rankButtons;
     let eventRank = () => {
-      rankButtons = document.querySelectorAll('.rating.button');
+      rankButtons = row.selected.querySelectorAll('.rating.button');
       rankButtons.forEach((button) => {
         button.addEventListener("click", (event) => rank(event));
       })
@@ -228,13 +226,13 @@ const editModule = (function() {
       deleteButton.removeEventListener("click", deleteCurrentRow);
       editorContainer.innerHTML = '';
       // ENABLE HEADER BUTTONS, CELLS FOR EDITING
-      tableModule.btnAddsReadBook.disabled = false;
-      tableModule.btnAddsUnreadBook.disabled = false;
       if (library.setting == "table-read") {
         tableModule.btnTogglesToRead.disabled = false;
+        tableModule.btnAddsReadBook.disabled = false;
       }
       else if (library.setting == "table-to-read") {
         tableModule.btnTogglesRead.disabled = false;
+        tableModule.btnAddsUnreadBook.disabled = false;
       }
       tableModule.enableAllRows();
       initEditing();

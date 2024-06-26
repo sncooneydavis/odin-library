@@ -175,7 +175,7 @@ flex-direction: row;
 }
 
 .rating.button {
-  width: 2.2vw;
+  width: 2.35vw;
 }
 
 .sidebar-for-buttons-movement{
@@ -187,7 +187,11 @@ padding: 1.2vw;
 position: absolute;
 }
 
+.editor-button {
+  width: 2.5vw;
+}
+ 
 /* off */
 .rating.button.off {
-display:none;
+  opacity: 0;
 }
